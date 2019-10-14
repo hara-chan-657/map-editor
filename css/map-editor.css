@@ -1,0 +1,183 @@
+body {
+	padding: 20px;
+	margin: 8px;
+}
+
+#options {
+	height: 33px;
+	background-color:white;
+	max-width: 860px;
+	padding: 2px;
+	margin-bottom:3px;
+}
+
+.option {
+	height: 33px;
+	display: inline-block;
+	border:1px solid gray;
+	position: relative;
+}
+
+.z2 {
+	text-align: center;
+	z-index:1;
+	font-size: 11px;
+	position: absolute;
+	width: 80px;
+	height: 20px;
+	top: -20px;
+	left: 16px;
+	border: 1px solid black;
+	background-color: lightgray;
+	display:none;
+}
+
+#mapStatus {
+	margin: 0px;
+}
+
+#back {
+	display: none;
+}
+
+#forward {
+	display: none;
+}
+
+#canvas-container {
+	display: block;
+	border:1px solid green;
+	padding: 30px;
+	max-width: 830px;
+	background-image:url("../image/map-editor/background.png");
+}
+
+#currentMapChipContainer {
+	position: relative;
+}
+
+#currentMapChipContainer {
+	background-image:url("../image/map-editor/background.png");
+	height: 148px;
+}
+
+#currentMapChipBG {
+	overflow: scroll;
+	height: 117px;
+}
+
+#currentMapChip {
+	background-color: white;
+	border: 1px solid black;
+}
+
+#mapChipContainer {
+	background-color: black;
+	padding: 10px;
+	margin-left: 30px;
+	width: 290px;
+	height: 460px;
+	display: inline-block;
+}
+
+.mapchip {
+	background-color: white;
+	margin: 2px;
+	border: 1px solid black;
+}
+
+.mapCategory {
+	margin: 7px 0px 0px 0px;
+	background-color: navy;
+	color: white;
+}
+
+.acordion {
+	display: none;
+	background-image:url("../image/map-editor/background.png");
+	overflow: scroll;
+}
+
+.unfoldButton {
+	background-color: blue;
+	padding: 1px;
+	margin-right: 5px;
+	border-radius: 50%;
+	cursor: pointer;
+}
+
+.foldButton {
+	display: none;
+	background-color: blue;
+	padding 0px 5px;
+	margin-right: 5px;
+	border-radius: 50%;
+	cursor: pointer;
+}
+
+#maps {
+	overflow: scroll;
+	height: 290px;
+	margin-top: 10px;
+}
+
+#mapContainer {
+	float: left;
+	border: 1px solid red;
+	display: inline-block;
+	overflow: scroll;
+	white-space:nowrap;
+	width: 480px;
+	height: 480px;
+	background-color: white;
+}
+
+#mapBG {
+	background-image: url("../image/map-editor/mapBG.png");
+}
+
+#preview-link-container {
+	display: block;
+	margin: 30px 0px;
+}
+
+#preview-link {
+	display: none;
+}
+
+#previewLinkButton {
+	background-color: darkorange;
+	color: white;
+	padding: 8px;
+	border-radius: 20px;
+	cursor: pointer;
+}
+
+#preview-container {
+	display: none;
+	border
+}
+
+#rewrite {
+	background-color: blue;
+	color: white;
+	padding: 8px;
+	border-radius: 20px;
+	display: inline-block;
+	margin-top: 20px;
+	cursor: pointer;
+}
+
+#download-link {
+	background-color: red;
+	color: white;
+	padding: 8px;
+	border-radius: 20px;
+	display: inline-block;
+	margin-top: 20px;
+	margin-left: 30px;
+	text-decoration: none;
+}
+
+
+
