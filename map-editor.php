@@ -25,9 +25,7 @@ $mapChips = $obj->getMapChips();
 </head>
 <body>
     <div id="header-container">
-		<img src="./image/map-editor/header.png" alt="ヘッダー画像">
-		<img src="./image/map-editor/self-icon.png" alt="ヘッダー画像">
-		<img src="./image/map-editor/coffee.png" alt="ヘッダー画像">
+		<img src="./image/map-editor/header.png" alt="ヘッダー画像">	
 	</div>
     <div id="editContainer">
         <div id="options">
