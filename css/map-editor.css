@@ -48,22 +48,21 @@ body {
 	display: block;
 	border:1px solid green;
 	padding: 30px;
-	max-width: 830px;
+	max-width: 1250px;
 	background-image:url("../image/map-editor/background.png");
 }
 
 #currentMapChipContainer {
 	position: relative;
-}
-
-#currentMapChipContainer {
 	background-image:url("../image/map-editor/background.png");
-	height: 148px;
+	height: 460px;
+	width: 300px;
+	float: left;
 }
 
 #currentMapChipBG {
 	overflow: scroll;
-	height: 117px;
+	height: 430px;
 }
 
 #currentMapChip {
@@ -75,7 +74,7 @@ body {
 	background-color: black;
 	padding: 10px;
 	margin-left: 30px;
-	width: 290px;
+	width: 680px;
 	height: 460px;
 	display: inline-block;
 }
@@ -87,9 +86,10 @@ body {
 }
 
 .mapCategory {
-	margin: 7px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
 	background-color: navy;
 	color: white;
+	width: 300px;
 }
 
 .acordion {
@@ -117,8 +117,12 @@ body {
 
 #maps {
 	overflow: scroll;
-	height: 290px;
-	margin-top: 10px;
+	max-height: 460px;
+	max-width: 360px;
+	margin-top: 0px;
+	margin-left: 10px;
+	float: left;
+
 }
 
 #mapContainer {
