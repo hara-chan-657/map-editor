@@ -15,6 +15,8 @@ var draggingFlg = false;
 //現在マップチップキャンバスたて横
 var currentMapChipCanvasHeight = 0;
 var currentMapChipCanvasWidth = 0;
+//現在マップチップ属性
+var currentMapChipType;
 
 //１マップ大きさ
 var mapLength = 32;
@@ -23,8 +25,10 @@ var mapRowNum = 15;
 //マップ列数
 var mapColNum = 15;
 //マップフォーカススタート位置
-var startX;
-var startY;
+var startX = -1;
+var startY = -1;
+//マップチップ属性記憶配列
+var arrayMaptipType = [];
 
 //================================ 各種エレメント ===============================================//
 //編集時コンテナ
@@ -78,6 +82,8 @@ var foldButtons = document.getElementsByClassName('foldButton');
 var characterIcon = document.getElementById('characterIconContainer');
 //マップアイコンコンテナ
 var mapIcon = document.getElementById('mapIconContainer');
+//マップ通りぬけアイコンコンテナ
+var mapPassIcon = document.getElementById('mapPassIconContainer');
 //ツールアイコンコンテナ
 var toolIcon = document.getElementById('toolIconContainer');
 //建物アイコンコンテナ
@@ -102,6 +108,8 @@ var preview = document.getElementById('preview');
 var rewrite = document.getElementById('rewrite');
 //ダウンロードボタン
 var DlLink = document.getElementById('download-link');
+//この内容で保存ボタン
+var saveMapData = document.getElementById('save-map-data');
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////　　以下イベント   ////////////////////////////////////////////
@@ -140,6 +148,8 @@ delCol.addEventListener('click', function () {setMap('col','del');}, false);
 previewLink.addEventListener('click', showPreview, false);
 rewrite.addEventListener('click', doRewrite, false);
 DlLink.addEventListener('click', downloadCanvas, false);
+saveMapData.addEventListener('click', saveMapDataToSever, false);
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////　　以下ファンクション   //////////////////////////////////////////
@@ -150,9 +160,12 @@ function setDefault() {
     setCurrentMode();
 }
 
-//現在のマップチップを表示する
+//現在のマップチップを表示する。マップチップタイプもセットする。
 function setCurrentMapChip(evt) {
-    currentMapChip.src = evt.target.src;
+	//クリックしたチップのurl取得
+	currentMapChip.src = evt.target.src;
+	//クリックしたチップのタイプ取得
+	currentMapChipType = evt.target.parentNode.parentNode.id;
 }
 
 //マップを表示する
@@ -200,7 +213,15 @@ function setMap(direction, mode) {
     } else {
 		//何でもない時（初期表示）
 		mapCanvas.setAttribute('height', mapRowNum*mapLength);
-    	mapCanvas.setAttribute('width', mapColNum*mapLength);
+		mapCanvas.setAttribute('width', mapColNum*mapLength);
+		//マップチップ属性デフォルトセット
+		for (var i=0; i<mapRowNum; i++) {
+			arrayMaptipType[i] = [];
+			for (var j=0; j<mapColNum; j++) {
+				arrayMaptipType[i][j] = 0;
+			}
+		}
+		savaMaptipTypeAsJson();
 	}
 	mapBG.style.width = mapColNum*mapLength + 'px';
 	mapStatus.innerHTML = 'マップステータス <br>■ 縦：' + mapRowNum + '行(' + mapRowNum*mapLength + 'px) ■ 横：' + mapColNum + '列(' + mapColNum*mapLength + 'px)';
@@ -362,7 +383,11 @@ function setDraggingFlg (bool) {
 	draggingFlg = bool;
 	// var currentModeId = currentModeElement[0].id;
 	if (bool == false) {
+		//戻る進むを更新する
 		updataBackForward();
+		//スタート位置を初期化
+		startX = -1;
+		startY = -1;
 	}
 }
 
@@ -377,21 +402,29 @@ function editMap(evt) {
 	var x = mousePos.x;
     var y = mousePos.y;
 
-	//スタート位置(マップごとの)
-	startX = Math.floor(x/mapLength);
-    startY = Math.floor(y/mapLength);
+	var tmpPositionX = Math.floor(x/mapLength);
+	var tmpPositionY = Math.floor(y/mapLength);
 
-    //現在モードid取得
-	var currentModeId = currentModeElement[0].id;
+	//(ドラッグの時用)前回のスタート位置とスタート位置を比較、同じ場合は何もしない
+	if (startX != tmpPositionX || startY != tmpPositionY) {
+		//スタート位置(マップごとの)
+		startX = tmpPositionX;
+    	startY = tmpPositionY;
 
-    if (currentModeId == 'put') {
-        //現在チップをマップに表示
-        mapContext.drawImage(currentMapChip, mapLength*startX, mapLength*startY);
-    } else if (currentModeId == 'delete') {
-		mapContext.clearRect(mapLength*startX, mapLength*startY, mapLength, mapLength);
-		//現在チップをマップに表示
-    } else if (currentModeId == '') {
+    	//現在モードid取得
+		var currentModeId = currentModeElement[0].id;
 
+    	if (currentModeId == 'put') {
+        	//現在チップをマップに表示
+			mapContext.drawImage(currentMapChip, mapLength*startX, mapLength*startY);
+			//マップチップ属性を更新
+			//currentMapChipType
+    	} else if (currentModeId == 'delete') {
+			//マップチップ消去
+			mapContext.clearRect(mapLength*startX, mapLength*startY, mapLength, mapLength);
+    	} else if (currentModeId == '') {
+
+		}
 	}
 }
 
@@ -442,6 +475,86 @@ function downloadCanvas(evt) {
 	const a = evt.target; //e.targetはクリックされた要素を指す（<a>タグ）
 	a.href = mapCanvas.toDataURL(); //Canvasからdata:URLを取得
 	a.download = new Date().getTime() + '.png'; //ダウンロードファイル名はタイムスタンプに設定
+}
+
+//マップチップ属性をjsonにして保存する
+function savaMaptipTypeAsJson() {
+	var obj = new Object();
+	for (var i=0; i<mapRowNum; i++) {
+		obj[i] = new Object();
+		for (var j=0; j<mapColNum; j++) {
+			obj[i][j] = Object();
+			obj[i][j]['maptipType'] = arrayMaptipType[i][j];
+		}
+	}
+	var objTxt = JSON.stringify(obj);
+	document.forms['map_data'].elements['map_obj_data'].value = objTxt;
+}
+
+//画像を保存
+function saveMaptip() {
+	var data = mapCanvas.toDataURL("image/png");
+	data = data.replace("data:image/png;base64,", "");
+	document.forms['map_data'].elements['map_image_data'].value = data;
+}
+
+//マップデータをサーバに保存する
+function saveMapDataToSever() {
+	var error = false; //エラーフラグ
+	var oldProjectName; //既存プロジェクト名
+	var newProjectName; //新規プロジェクト名
+	var oldFlg = false; //既存プロジェクトフラグ
+	var newFlg = false; //新規プロジェクトフラグ
+	var MapDataForm = document.forms['map_data'];
+	if (MapDataForm.old.checked) {
+		//既存プロジェクトの場合
+		if (MapDataForm.oldProjectName.children.length == 0){
+			alert('既存プロジェクトがありません');
+			error = true;	
+		} else if (MapDataForm.oldProjectName.disabled) {
+			MapDataForm.oldProjectName.disabled = false;
+		} else {
+			MapDataForm.newProjectName.disabled = true;	
+			oldProjectName = MapDataForm.oldProjectName.value;
+			oldFlg = true;
+		}
+	} else if (MapDataForm.new.checked) {
+		//新規プロジェクトの場合
+		newProjectName = MapDataForm.newProjectName.value;
+		if (MapDataForm.newProjectName.disabled) {
+			MapDataForm.newProjectName.disabled = false;
+		}
+		if (newProjectName == null || newProjectName.length == 0) {
+			alert('新規プロジェクト名を入力してください。');
+			error = true;
+		} else {
+			MapDataForm.oldProjectName.disabled = true;
+			newFlg = true;
+		}
+	} else {
+
+	}
+	
+	if (!error) {
+		var mapData;
+		if (oldFlg) {
+			mapData = '既存プロジェクト：' + oldProjectName;
+		} else if (newFlg) {
+			mapData = '新規プロジェクト：' + newProjectName;
+		}
+		//いったん本当に良いかアラート
+		var confirmTxt = '下記の情報でマップデータをサーバに保存します。\n\n' + mapData + '\n\n編集画面には戻れません。\nよろしいですか？';
+		var ret = confirm(confirmTxt);
+		if (ret) {
+			//アラートの結果もよければ、マップデータを保存して、サブミット
+			savaMaptipTypeAsJson();
+			saveMaptip();
+			MapDataForm.submit();
+		} else {
+			MapDataForm.oldProjectName.disabled = false;
+			MapDataForm.newProjectName.disabled = false;
+		}
+	}
 }
 
 

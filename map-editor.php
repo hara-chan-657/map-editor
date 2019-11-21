@@ -1,10 +1,39 @@
 <?php
 require_once('map-editor-ctrl.php');
-require_once('map-editor-lgc.php');
+require_once('map-editor-model.php');
+
+$obj = new mapEditor();
+
+if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
+    //マップ画像データとマップオブジェクトデータを取得
+    $mapImageData = $_POST['map_image_data'];
+    $mapObjData = $_POST['map_obj_data'];
+
+    if (isset($_POST['oldProjectName'])) {
+        //既存プロジェクトに保存の場合
+        $oldProjectName = $_POST['oldProjectName'];
+        $ret = $obj->addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData);
+        if ($ret) {
+            echo '保存しました！';
+        }
+    } else if (isset($_POST['newProjectName'])) {
+        //新規プロジェクトに保存の場合
+        $newProjectName = $_POST['newProjectName'];
+        $ret = $obj->addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData);
+        if ($ret) {
+            echo '保存しました！';
+        }
+    } else {
+
+    }
+}
 
 //初期表示のためのマップチップ取得
-$obj = new mapEditor();
 $mapChips = $obj->getMapChips();
+
+//プロジェクトリスト(セレクトボックス)を取得
+$projectSelect = $obj->getProjects();
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -67,7 +96,7 @@ $mapChips = $obj->getMapChips();
                         <div class="acordion">
                             <?php
                             foreach ($mapChips['character'] AS $file) {
-                                echo '<img src="'.$file.'" alt="マップチップ" class="mapchip">';
+                                echo '<img src="'.$file.'" alt="キャラクターマップチップ" class="mapchip">';
                             }
                             ?>
                         </div>
@@ -80,7 +109,20 @@ $mapChips = $obj->getMapChips();
                         <div class="acordion">
                             <?php
                             foreach ($mapChips['map'] AS $file) {
-                                echo '<img src="'.$file.'" alt="マップチップ" class="mapchip">';
+                                echo '<img src="'.$file.'" alt="マップマップチップ" class="mapchip">';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div id="mapPassIconContainer">
+                        <p class="mapCategory">
+                            <span class="unfoldButton">＋</span>
+                            <span class="foldButton">ー</span>マップ通りぬけ
+                        </p>
+                        <div class="acordion">
+                            <?php
+                            foreach ($mapChips['mapPass'] AS $file) {
+                                echo '<img src="'.$file.'" alt="マップマップチップ" class="mapchip">';
                             }
                             ?>
                         </div>
@@ -93,7 +135,7 @@ $mapChips = $obj->getMapChips();
                         <div class="acordion">
                             <?php
                             foreach ($mapChips['tool'] AS $file) {
-                                echo '<img src="'.$file.'" alt="マップチップ" class="mapchip">';
+                                echo '<img src="'.$file.'" alt="ツールマップチップ" class="mapchip">';
                             }
                             ?>
                         </div>
@@ -106,7 +148,7 @@ $mapChips = $obj->getMapChips();
                         <div class="acordion">
                             <?php
                             foreach ($mapChips['building'] AS $file) {
-                                echo '<img src="'.$file.'" alt="マップチップ" class="mapchip">';
+                                echo '<img src="'.$file.'" alt="建物マップチップ" class="mapchip">';
                             }
                             ?>
                         </div>
@@ -120,10 +162,24 @@ $mapChips = $obj->getMapChips();
         </div>
     </div>
     <div id="preview-container">
-		<img id ="preview" src="">
+        <img id ="preview" src="">
+        <br>
 		<span id="rewrite">書き直す</span>
-		<a id="download-link" href="" download="">ダウンロード</a>
-	</div>
+        <a id="download-link" href="" download="">ダウンロード</a>
+        <div id="save-map-container">
+            <form name="map_data" action="" method="post">
+                <input type="radio" id="old" name="projectType" value="old" checked>既存のプロジェクトに追加<br>
+                <?php echo $projectSelect ?><br>
+                <input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>
+                <input type="text" id="newProjectName" name="newProjectName">
+                <br>
+                <span id="save-map-data">この内容でサーバに保存</span>
+                <input type="hidden" name="map_image_data" value="" />
+                <input type="hidden" name="map_obj_data" value="" />
+            </form>
+        </div>
+    </div>
+
     <script src="./js/map-editor.js"></script>
 </body>
 </html>
