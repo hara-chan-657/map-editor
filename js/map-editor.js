@@ -17,7 +17,12 @@ var currentMapChipCanvasHeight = 0;
 var currentMapChipCanvasWidth = 0;
 //現在マップチップ属性
 var currentMapChipType;
-
+//現在マップチップ属性縦
+var currentMapChipRowNum;
+//現在マップチップ属性横
+var currentMapChipColNum;
+//マップチップ属性記憶配列
+var arrayMaptipType = [];
 //１マップ大きさ
 var mapLength = 32;
 //マップ行数
@@ -27,8 +32,6 @@ var mapColNum = 15;
 //マップフォーカススタート位置
 var startX = -1;
 var startY = -1;
-//マップチップ属性記憶配列
-var arrayMaptipType = [];
 
 //================================ 各種エレメント ===============================================//
 //編集時コンテナ
@@ -71,6 +74,8 @@ var mapStatus = document.getElementById('mapStatus');
 
 //現在マップチップ
 var currentMapChip = document.getElementById('currentMapChip');
+//現在マップチップサイズ
+var currentMapChipSize = document.getElementById('currentMapChipSize');
 // var currentMapChipContext = currentMapChipCanvas.getContext('2d');
 //マップチップコンテナ
 var mapChipContainer = document.getElementById('mapChipContainer');
@@ -156,16 +161,50 @@ saveMapData.addEventListener('click', saveMapDataToSever, false);
 ///////////////////////////////////////////////////////////////////////////////////////////
 //デフォルト値設定
 function setDefault() {
-    setMap();
-    setCurrentMode();
+	setMap();
+	setArrayMaptipType('load');
+	setCurrentMode();
 }
 
-//現在のマップチップを表示する。マップチップタイプもセットする。
+//現在のマップチップを表示する。
+//マップチップタイプもセットする。
+//マップチップの縦横も取得する
 function setCurrentMapChip(evt) {
 	//クリックしたチップのurl取得
 	currentMapChip.src = evt.target.src;
 	//クリックしたチップのタイプ取得
-	currentMapChipType = evt.target.parentNode.parentNode.id;
+	var currentMapChipTypeId = evt.target.parentNode.parentNode.id;
+	switch (currentMapChipTypeId) {
+		case 'characterIconContainer':
+			//ドラッグフラグ変更
+			currentMapChipType = 1;
+			break;
+
+		case 'mapIconContainer':
+			//ドラッグフラグ変更
+			currentMapChipType = 2;
+			break;
+
+		case 'mapPassIconContainer':
+			//ドラッグフラグ変更
+			currentMapChipType = 3;
+			break;
+
+		case 'toolIconContainer':
+			//ドラッグフラグ変更
+			currentMapChipType = 4;
+			break;
+
+		case 'buildingIconContainer':
+			//ドラッグフラグ変更
+			currentMapChipType = 5;
+			break;
+	}
+	//マップチップの縦横（マップチップ数）を取得する、画面にも表示する
+	currentMapChipRowNum = currentMapChip.naturalHeight/32;
+	currentMapChipColNum = currentMapChip.naturalWidth/32;
+	var mapSizeTxt = ' (' + currentMapChipRowNum + '×'　+ currentMapChipColNum + 'マス)';
+	currentMapChipSize.innerText = mapSizeTxt;
 }
 
 //マップを表示する
@@ -179,6 +218,7 @@ function setMap(direction, mode) {
 			mapCanvas.setAttribute('height', mapRowNum*mapLength);
 			mapCanvas.setAttribute('width', mapColNum*mapLength);
 			mapContext.putImageData(evacuateMap, 0, 0);
+			setArrayMaptipType('add', 'row');
         } else if (mode == 'del') {
 			//一行減らす
 			if (mapRowNum == 1) {
@@ -188,6 +228,7 @@ function setMap(direction, mode) {
 			mapCanvas.setAttribute('height', mapRowNum*mapLength);
 			mapCanvas.setAttribute('width', mapColNum*mapLength);
 			mapContext.putImageData(evacuateMap, 0, 0);
+			setArrayMaptipType('del', 'row');
         } else {
 			//何もしない
         }
@@ -198,6 +239,7 @@ function setMap(direction, mode) {
 			mapCanvas.setAttribute('height', mapRowNum*mapLength);
 			mapCanvas.setAttribute('width', mapColNum*mapLength);
 			mapContext.putImageData(evacuateMap, 0, 0);
+			setArrayMaptipType('add', 'col');
         } else if (mode == 'del') {
 			//一列減らす
 			if (mapColNum == 1) {
@@ -207,6 +249,7 @@ function setMap(direction, mode) {
 			mapCanvas.setAttribute('height', mapRowNum*mapLength);
 			mapCanvas.setAttribute('width', mapColNum*mapLength);
 			mapContext.putImageData(evacuateMap, 0, 0);
+			setArrayMaptipType('del', 'col');
         } else {
             //何もしない
         }
@@ -214,14 +257,6 @@ function setMap(direction, mode) {
 		//何でもない時（初期表示）
 		mapCanvas.setAttribute('height', mapRowNum*mapLength);
 		mapCanvas.setAttribute('width', mapColNum*mapLength);
-		//マップチップ属性デフォルトセット
-		for (var i=0; i<mapRowNum; i++) {
-			arrayMaptipType[i] = [];
-			for (var j=0; j<mapColNum; j++) {
-				arrayMaptipType[i][j] = 0;
-			}
-		}
-		savaMaptipTypeAsJson();
 	}
 	mapBG.style.width = mapColNum*mapLength + 'px';
 	mapStatus.innerHTML = 'マップステータス <br>■ 縦：' + mapRowNum + '行(' + mapRowNum*mapLength + 'px) ■ 横：' + mapColNum + '列(' + mapColNum*mapLength + 'px)';
@@ -350,6 +385,7 @@ function shiftCanvas (direction) {
 		mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
 		mapContext.putImageData(leftLine, mapColNum*mapLength-mapLength, 0);
 		mapContext.putImageData(other, 0, 0);
+		setArrayMaptipType('shift', direction);
 	} else if (direction == 'right') {
 	//右シフト
 		var rightLine = mapContext.getImageData(mapColNum*mapLength-mapLength, 0, mapLength, mapRowNum*mapLength);
@@ -357,6 +393,7 @@ function shiftCanvas (direction) {
 		mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
 		mapContext.putImageData(rightLine, 0, 0);
 		mapContext.putImageData(other, mapLength, 0);
+		setArrayMaptipType('shift', direction);
 	} else if (direction == 'above') {
 	//上シフト
 		var aboveLine = mapContext.getImageData(0, 0, mapColNum*mapLength, mapLength);
@@ -364,6 +401,7 @@ function shiftCanvas (direction) {
 		mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
 		mapContext.putImageData(aboveLine, 0, mapRowNum*mapLength-mapLength);
 		mapContext.putImageData(other, 0, 0);
+		setArrayMaptipType('shift', direction);
 	} else if (direction == 'below') {
 	//下シフト
 		var belowLine = mapContext.getImageData(0, mapRowNum*mapLength-mapLength, mapColNum*mapLength, mapLength);
@@ -371,6 +409,7 @@ function shiftCanvas (direction) {
 		mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
 		mapContext.putImageData(belowLine, 0, 0);
 		mapContext.putImageData(other, 0, mapLength);
+		setArrayMaptipType('shift', direction);
 	} else {
 		//何もしない
 	}
@@ -418,10 +457,17 @@ function editMap(evt) {
         	//現在チップをマップに表示
 			mapContext.drawImage(currentMapChip, mapLength*startX, mapLength*startY);
 			//マップチップ属性を更新
-			//currentMapChipType
+			//マップチップの縦横分更新
+			for (i=0; i<currentMapChipRowNum; i++) {
+				for (j=0; j<currentMapChipColNum; j++) {
+					arrayMaptipType[startY+i][startX+j] = currentMapChipType;
+				}
+			}
     	} else if (currentModeId == 'delete') {
 			//マップチップ消去
 			mapContext.clearRect(mapLength*startX, mapLength*startY, mapLength, mapLength);
+			//マップチップ属性を更新（削除）
+			arrayMaptipType[startY][startX] = 0;
     	} else if (currentModeId == '') {
 
 		}
@@ -475,6 +521,112 @@ function downloadCanvas(evt) {
 	const a = evt.target; //e.targetはクリックされた要素を指す（<a>タグ）
 	a.href = mapCanvas.toDataURL(); //Canvasからdata:URLを取得
 	a.download = new Date().getTime() + '.png'; //ダウンロードファイル名はタイムスタンプに設定
+}
+
+//マップチップ属性配列をセットする
+function setArrayMaptipType (mode, direction) {
+	if (mode == 'load') {
+		//マップチップ属性デフォルトセット
+		for (var i=0; i<mapRowNum; i++) {
+			arrayMaptipType[i] = [];
+			for (var j=0; j<mapColNum; j++) {
+				arrayMaptipType[i][j] = 0;
+			}
+		}
+	} else if (mode == 'add') {
+		if (direction == 'row') {
+			arrayMaptipType[mapRowNum-1] = [];
+			for (var i=0; i<mapColNum; i++) {
+				arrayMaptipType[mapRowNum-1][i] = 0;
+			}
+		} else if (direction == 'col') {
+			for (var i=0; i<mapRowNum; i++) {
+				arrayMaptipType[i][mapColNum-1] = 0;
+			}
+		} else {
+
+		}
+		
+	} else if (mode == 'del') {
+		if (direction == 'row') {
+			arrayMaptipType.pop();
+		} else if (direction == 'col') {
+			for (var i=0; i<mapRowNum; i++) {
+				arrayMaptipType[i].pop();
+			}
+		} else {
+
+		}
+		
+	} else if (mode == 'shift') {
+		if (direction == 'left') {
+			//一番左のマップチップの値
+			var leftSideTipValue;
+			for (var i=0; i<mapRowNum; i++) {
+				for (var j=0; j<mapColNum; j++) {
+					if (j==0) {
+						//一列目の時だけ、あらかじめ一番左の列のチップの値を取得しておく
+						leftSideTipValue = arrayMaptipType[i][j];
+						continue;
+					}
+					arrayMaptipType[i][j-1] = arrayMaptipType[i][j];
+				}
+				//一行ループが終わったら、最初に確保した一番左の値を一番右の値に代入
+				arrayMaptipType[i][mapColNum-1] = leftSideTipValue;
+			}
+
+		} else if (direction == 'right') {
+			//一番右のマップチップの値
+			var rightSideTipValue;
+			for (var i=0; i<mapRowNum; i++) {
+				for (var j=0; j<mapColNum; j++) {
+					if (j==0) {
+						//一列目の時だけ、あらかじめ一番右の列のチップの値を取得しておく
+						rightSideTipValue = arrayMaptipType[i][mapColNum-1];
+						continue;
+					}
+					arrayMaptipType[i][mapColNum-j] = arrayMaptipType[i][mapColNum-1-j];
+				}
+				//一行ループが終わったら、最初に確保した一番右の値を一番左の値に代入
+				arrayMaptipType[i][0] = rightSideTipValue;
+			}
+
+		} else if (direction == 'above') {
+			//一番上のマップチップの値
+			var aboveSideTipValue;
+			for (var i=0; i<mapColNum; i++) {
+				for (var j=0; j<mapRowNum; j++) {
+					if (j==0) {
+						//一列目の時だけ、あらかじめ一番上の列のチップの値を取得しておく
+						aboveSideTipValue = arrayMaptipType[j][i];
+						continue;
+					}
+					arrayMaptipType[j-1][i] = arrayMaptipType[j][i];
+				}
+				//一行ループが終わったら、最初に確保した一番右の値を一番下の値に代入
+				arrayMaptipType[mapRowNum-1][i] = aboveSideTipValue;
+			}
+
+		} else if (direction == 'below') {
+			//一番上のマップチップの値
+			var belowSideTipValue;
+			for (var i=0; i<mapColNum; i++) {
+				for (var j=0; j<mapRowNum; j++) {
+					if (j==0) {
+						//一列目の時だけ、あらかじめ一番下の列のチップの値を取得しておく
+						belowSideTipValue = arrayMaptipType[mapRowNum-1][i];
+						continue;
+					}
+					arrayMaptipType[mapRowNum-j][i] = arrayMaptipType[mapRowNum-j-1][i];
+				}
+				//一行ループが終わったら、最初に確保した一番下の値を一番上の値に代入
+				arrayMaptipType[0][i] = belowSideTipValue;
+			}
+
+		} else {
+
+		}
+	}
 }
 
 //マップチップ属性をjsonにして保存する

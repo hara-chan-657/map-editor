@@ -26,6 +26,8 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
     } else {
 
     }
+
+
 }
 
 //初期表示のためのマップチップ取得
@@ -82,7 +84,7 @@ $projectSelect = $obj->getProjects();
             </div>
             <div id="mapChipContainer">
                 <div id="currentMapChipContainer">
-                    <p class="mapCategory">現在選択中のチップ</p>
+                    <p class="mapCategory">現在選択中のチップ<span id="currentMapChipSize"></p>
                     <div id="currentMapChipBG">
                         <img src-"" id="currentMapChip">
                     </div>
