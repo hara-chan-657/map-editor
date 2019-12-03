@@ -4,6 +4,17 @@ require_once('map-editor-model.php');
 
 $obj = new mapEditor();
 
+if(isset($_GET['id']) && isset($_GET['pas'])) {
+	$id = $_GET['id'];
+	$pas = $_GET['pas'];
+	$adminRes = $obj->isAdmin($id, $pas);
+	if ($adminRes) {
+		$saveMapContainer = $obj->getSaveMapContainer();
+	}
+} else {
+	$saveMapContainer = '';
+}
+
 if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
     //マップ画像データとマップオブジェクトデータを取得
     $mapImageData = $_POST['map_image_data'];
@@ -168,18 +179,7 @@ $projectSelect = $obj->getProjects();
         <br>
 		<span id="rewrite">書き直す</span>
         <a id="download-link" href="" download="">ダウンロード</a>
-        <div id="save-map-container">
-            <form name="map_data" action="" method="post">
-                <input type="radio" id="old" name="projectType" value="old" checked>既存のプロジェクトに追加<br>
-                <?php echo $projectSelect ?><br>
-                <input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>
-                <input type="text" id="newProjectName" name="newProjectName">
-                <br>
-                <span id="save-map-data">この内容でサーバに保存</span>
-                <input type="hidden" name="map_image_data" value="" />
-                <input type="hidden" name="map_obj_data" value="" />
-            </form>
-        </div>
+        <?php echo $saveMapContainer ?>
     </div>
 
     <script src="./js/map-editor.js"></script>

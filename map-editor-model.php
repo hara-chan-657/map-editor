@@ -1,6 +1,7 @@
 <?php
 //map-editorのmodel
 //クラスを作って、コンストラクタと各ファンクションを記述する
+require("admin.php");
 
 class mapEditor {
 
@@ -130,6 +131,27 @@ class mapEditor {
             return true;
         };
         return false;
+    }
+
+    function isAdmin ($id, $pas) {
+        global $adminId;
+        global $adminPas;
+        if ($id == $adminId && $pas == $adminPas) {
+            return true;
+        }
+        return false;
+    }
+
+    function getSaveMapContainer() {
+        $html = '<div id="save-map-container"><form name="map_data" action="" method="post">';
+        $html .= '<br><input type="radio" id="old" name="projectType" value="old" checked>既存のプロジェクトに追加<br>';
+        $html .= $this->getProjects();
+        $html .= '<br><br><input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>';
+        $html .= '<input type="text" id="newProjectName" name="newProjectName"><br>';        
+        $html .= '<span id="save-map-data">この内容でサーバに保存</span>';
+        $html .= '<input type="hidden" name="map_image_data" value="" />';
+        $html .= '<input type="hidden" name="map_obj_data" value="" /></form></div>';
+        return $html;
     }
 }
 
