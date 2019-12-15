@@ -80,21 +80,19 @@ class mapEditor {
      * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
      * return bool
      */
-    function addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData) {
+    function addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData, $mapName) {
         //新規プロジェクトのパスを保存
         $newProjectPath = $this->projectDirPath . $newProjectName;
         //新規プロジェクトディレクトリ作成
         if(mkdir($newProjectPath)) {
             //マップデータデコード
             $decodedImageData = base64_decode($mapImageData);
-            //名前用時刻取得
-            $date = date('YmdHis');
             //マップ画像を保存
-            $fp = fopen($newProjectPath . "/" . $date . ".png", "wb");
+            $fp = fopen($newProjectPath . "/" . $mapName . ".png", "wb");
             fwrite($fp, $decodedImageData);
             fclose($fp);
             //マップオブジェクトデータを保存
-            $fp = fopen($newProjectPath . "/" . $date . ".json", "wb");
+            $fp = fopen($newProjectPath . "/" . $mapName . ".json", "wb");
             fwrite($fp, $mapObjData);
             fclose($fp);
 
@@ -110,26 +108,32 @@ class mapEditor {
      * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
      * return bool
      */
-    function addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData) {
+    function addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData, $mapName) {
         //既存プロジェクトのパスを保存
         $oldProjectPath = $this->projectDirPath . $oldProjectName;
         //既存プロジェクトがあるか調べる
         if(file_exists($oldProjectPath)) {
-            //マップデータデコード
-            $decodedImageData = base64_decode($mapImageData);
-            //名前用時刻取得
-            $date = date('YmdHis');
-            // 画像を保存
-            $fp = fopen($oldProjectPath . "/" . $date . ".png", "wb");
-            fwrite($fp, $decodedImageData);
-            fclose($fp);
-            //マップオブジェクトデータを保存
-            $fp = fopen($oldProjectPath . "/" . $date . ".json", "wb");
-            fwrite($fp, $mapObjData);
-            fclose($fp);
+            if(!file_exists($oldProjectPath.'/'.$mapName.'.png')) {
+                //マップデータデコード
+                $decodedImageData = base64_decode($mapImageData);
+                // 画像を保存
+                $fp = fopen($oldProjectPath . "/" . $mapName . ".png", "wb");
+                fwrite($fp, $decodedImageData);
+                fclose($fp);
+                //マップオブジェクトデータを保存
+                $fp = fopen($oldProjectPath . "/" . $mapName . ".json", "wb");
+                fwrite($fp, $mapObjData);
+                fclose($fp);
 
-            return true;
-        };
+                return true;
+
+            } else {
+                return '同名のファイルが存在します'; 
+            }
+
+        } else {
+            return 'プロジェクトがありません。'; 
+        }
         return false;
     }
 
@@ -147,10 +151,13 @@ class mapEditor {
         $html .= '<br><input type="radio" id="old" name="projectType" value="old" checked>既存のプロジェクトに追加<br>';
         $html .= $this->getProjects();
         $html .= '<br><br><input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>';
-        $html .= '<input type="text" id="newProjectName" name="newProjectName"><br>';        
+        $html .= '<input type="text" id="newProjectName" name="newProjectName"><br>';  
+        $html .= '<br><p>マップ名を入力</p>';
+        $html .= '<input type="text" id="mapName" name="mapName"><br>';        
         $html .= '<span id="save-map-data">この内容でサーバに保存</span>';
         $html .= '<input type="hidden" name="map_image_data" value="" />';
-        $html .= '<input type="hidden" name="map_obj_data" value="" /></form></div>';
+        $html .= '<input type="hidden" name="map_obj_data" value="" />';
+        $html .= '</form></div>';
         return $html;
     }
 }

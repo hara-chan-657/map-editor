@@ -19,20 +19,25 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
     //マップ画像データとマップオブジェクトデータを取得
     $mapImageData = $_POST['map_image_data'];
     $mapObjData = $_POST['map_obj_data'];
+    $mapName = $_POST['mapName'];
 
     if (isset($_POST['oldProjectName'])) {
         //既存プロジェクトに保存の場合
         $oldProjectName = $_POST['oldProjectName'];
-        $ret = $obj->addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData);
+        $ret = $obj->addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData, $mapName);
         if ($ret) {
             echo '保存しました！';
+        } else {
+            echo $ret;
         }
     } else if (isset($_POST['newProjectName'])) {
         //新規プロジェクトに保存の場合
         $newProjectName = $_POST['newProjectName'];
-        $ret = $obj->addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData);
+        $ret = $obj->addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData, $mapName);
         if ($ret) {
             echo '保存しました！';
+        } else {
+            echo $ret;
         }
     } else {
 
