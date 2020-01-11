@@ -650,6 +650,15 @@ function saveMaptip() {
 	document.forms['map_data'].elements['map_image_data'].value = data;
 }
 
+//プロジェクトファイルのデータ（デフォルト)作成
+function setProjectData(newProjectName) {
+	var obj = new Object();
+	obj['prjName'] = newProjectName;
+	obj['startMap'] = 'null';
+	var objTxt = JSON.stringify(obj);
+	document.forms['map_data'].elements['project_data'].value = objTxt;
+}
+
 //マップデータをサーバに保存する
 function saveMapDataToSever() {
 	var error = false; //エラーフラグ
@@ -701,6 +710,7 @@ function saveMapDataToSever() {
 			//アラートの結果もよければ、マップデータを保存して、サブミット
 			savaMaptipTypeAsJson();
 			saveMaptip();
+			setProjectData(newProjectName);
 			MapDataForm.submit();
 		} else {
 			MapDataForm.oldProjectName.disabled = false;

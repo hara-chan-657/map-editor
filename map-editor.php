@@ -33,7 +33,8 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
     } else if (isset($_POST['newProjectName'])) {
         //新規プロジェクトに保存の場合
         $newProjectName = $_POST['newProjectName'];
-        $ret = $obj->addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData, $mapName);
+        $projectData = $_POST['project_data'];
+        $ret = $obj->addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData, $mapName, $projectData);
         if ($ret) {
             echo '保存しました！';
         } else {
@@ -122,12 +123,12 @@ $projectSelect = $obj->getProjects();
                     <div id="mapIconContainer">
                         <p class="mapCategory">
                             <span class="unfoldButton">＋</span>
-                            <span class="foldButton">ー</span>マップ
+                            <span class="foldButton">ー</span>地形
                         </p>
                         <div class="acordion">
                             <?php
                             foreach ($mapChips['map'] AS $file) {
-                                echo '<img src="'.$file.'" alt="マップマップチップ" class="mapchip">';
+                                echo '<img src="'.$file.'" alt="地形マップチップ" class="mapchip">';
                             }
                             ?>
                         </div>
@@ -135,12 +136,12 @@ $projectSelect = $obj->getProjects();
                     <div id="mapPassIconContainer">
                         <p class="mapCategory">
                             <span class="unfoldButton">＋</span>
-                            <span class="foldButton">ー</span>マップ通りぬけ
+                            <span class="foldButton">ー</span>地形通りぬけ
                         </p>
                         <div class="acordion">
                             <?php
                             foreach ($mapChips['mapPass'] AS $file) {
-                                echo '<img src="'.$file.'" alt="マップマップチップ" class="mapchip">';
+                                echo '<img src="'.$file.'" alt="地形通りぬけマップチップ" class="mapchip">';
                             }
                             ?>
                         </div>

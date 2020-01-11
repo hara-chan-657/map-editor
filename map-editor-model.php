@@ -75,12 +75,13 @@ class mapEditor {
 
     /**
      * マップデータを新規プロジェクトに追加する
+     * プロジェクトデータjsonも作成する
      * param1 : 新規プロジェクト名
      * param2 : param1 : マップ画像データ(ベース64エンコードずみのもの)
      * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
      * return bool
      */
-    function addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData, $mapName) {
+    function addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData, $mapName, $projectData) {
         //新規プロジェクトのパスを保存
         $newProjectPath = $this->projectDirPath . $newProjectName;
         //新規プロジェクトディレクトリ作成
@@ -94,6 +95,10 @@ class mapEditor {
             //マップオブジェクトデータを保存
             $fp = fopen($newProjectPath . "/" . $mapName . ".json", "wb");
             fwrite($fp, $mapObjData);
+            fclose($fp);
+            //プロジェクトデータファイルを保存
+            $fp = fopen($newProjectPath . "/" . $newProjectName . ".json", "wb");
+            fwrite($fp, $projectData);
             fclose($fp);
 
             return true;
@@ -157,6 +162,7 @@ class mapEditor {
         $html .= '<span id="save-map-data">この内容でサーバに保存</span>';
         $html .= '<input type="hidden" name="map_image_data" value="" />';
         $html .= '<input type="hidden" name="map_obj_data" value="" />';
+        $html .= '<input type="hidden" name="project_data" value="" />';
         $html .= '</form></div>';
         return $html;
     }
