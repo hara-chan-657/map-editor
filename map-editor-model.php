@@ -97,7 +97,7 @@ class mapEditor {
             fwrite($fp, $mapObjData);
             fclose($fp);
             //プロジェクトデータファイルを保存
-            $fp = fopen($newProjectPath . "/" . $newProjectName . ".json", "wb");
+            $fp = fopen($newProjectPath . "/projectData.json", "wb");
             fwrite($fp, $projectData);
             fclose($fp);
 
