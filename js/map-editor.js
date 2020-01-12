@@ -655,6 +655,8 @@ function setProjectData(newProjectName) {
 	var obj = new Object();
 	obj['prjName'] = newProjectName;
 	obj['startMap'] = 'null';
+	obj['startPosX'] = 'null';
+	obj['startPosY'] = 'null';
 	var objTxt = JSON.stringify(obj);
 	document.forms['map_data'].elements['project_data'].value = objTxt;
 }
