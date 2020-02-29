@@ -85,10 +85,14 @@ $projectSelect = $obj->getProjects();
 		    <span class="option"><img src="./image/map-editor/shiftRight.png" alt="右シフト" id="shiftRight" class="z1"><span class="z2">右シフト</span></span>
 		    <span class="option"><img src="./image/map-editor/shiftAbove.png" alt="上シフト" id="shiftAbove" class="z1"><span class="z2">上シフト</span></span>
             <span class="option"><img src="./image/map-editor/shiftBelow.png" alt="下シフト" id="shiftBelow" class="z1"><span class="z2">下シフト</span></span>
-            <span class="option"><img src="./image/map-editor/addRow.png" alt="一行増やす" id="addRow" class="z1"><span class="z2">一行増やす</span></span>
-            <span class="option"><img src="./image/map-editor/addCol.png" alt="一行増やす" id="addCol" class="z1"><span class="z2">一列増やす</span></span>
-            <span class="option"><img src="./image/map-editor/delRow.png" alt="一行減らす" id="delRow" class="z1"><span class="z2">一行減らす</span></span>
-            <span class="option"><img src="./image/map-editor/delCol.png" alt="一行減らす" id="delCol" class="z1"><span class="z2">一列減らす</span></span>
+            <span class="option"><img src="./image/map-editor/addRowTop.png" alt="一行上に増やす" id="addRowTop" class="z1"><span class="z2">一行上に増やす</span></span>
+            <span class="option"><img src="./image/map-editor/addRowUnder.png" alt="一行下に増やす" id="addRowUnder" class="z1"><span class="z2">一行下に増やす</span></span>
+            <span class="option"><img src="./image/map-editor/addColRight.png" alt="一行右に増やす" id="addColRight" class="z1"><span class="z2">一列右に増やす</span></span>
+            <span class="option"><img src="./image/map-editor/addColLeft.png" alt="一行左に増やす" id="addColLeft" class="z1"><span class="z2">一列左に増やす</span></span>
+            <span class="option"><img src="./image/map-editor/delRowTop.png" alt="一行上を減らす" id="delRowTop" class="z1"><span class="z2">一行上を減らす</span></span>
+            <span class="option"><img src="./image/map-editor/delRowUnder.png" alt="一行下を減らす" id="delRowUnder" class="z1"><span class="z2">一行下を減らす</span></span>
+            <span class="option"><img src="./image/map-editor/delColRight.png" alt="一行右を減らす" id="delColRight" class="z1"><span class="z2">一列右を減らす</span></span>
+            <span class="option"><img src="./image/map-editor/delColLeft.png" alt="一行左を減らす" id="delColLeft" class="z1"><span class="z2">一列左を減らす</span></span>
         </div>
         <div id="canvas-container">
             <div id="mapStatusContainer">

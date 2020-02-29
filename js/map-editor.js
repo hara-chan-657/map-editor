@@ -61,13 +61,21 @@ var shiftAbove = document.getElementById('shiftAbove');
 //シフト下
 var shiftBelow = document.getElementById('shiftBelow');
 //一行増やす
-var addRow = document.getElementById('addRow');
+var addRowTop = document.getElementById('addRowTop');
+//一行増やす
+var addRowUnder = document.getElementById('addRowUnder');
 //一列増やす
-var addCol = document.getElementById('addCol');
+var addColLeft = document.getElementById('addColLeft');
+//一列増やす
+var addColRight = document.getElementById('addColRight');
 //一行減らす
-var delRow = document.getElementById('delRow');
+var delRowTop = document.getElementById('delRowTop');
+//一行減らす
+var delRowUnder = document.getElementById('delRowUnder');
 //一列減らす
-var delCol = document.getElementById('delCol');
+var delColLeft = document.getElementById('delColLeft');
+//一列減らす
+var delColRight = document.getElementById('delColRight');
 
 //マップステータス
 var mapStatus = document.getElementById('mapStatus');
@@ -146,10 +154,14 @@ shiftLeft.addEventListener('click', function () {shiftCanvas('left');}, false);
 shiftRight.addEventListener('click', function () {shiftCanvas('right');}, false);
 shiftAbove.addEventListener('click', function () {shiftCanvas('above');}, false);
 shiftBelow.addEventListener('click', function () {shiftCanvas('below');}, false);
-addRow.addEventListener('click', function () {setMap('row','add');}, false);
-addCol.addEventListener('click', function () {setMap('col','add');}, false);
-delRow.addEventListener('click', function () {setMap('row','del');}, false);
-delCol.addEventListener('click', function () {setMap('col','del');}, false);
+addColLeft.addEventListener('click', function () {setMap('col','add','left');}, false);
+addColRight.addEventListener('click', function () {setMap('col','add','right');}, false);
+delColLeft.addEventListener('click', function () {setMap('col','del','left');}, false);
+delColRight.addEventListener('click', function () {setMap('col','del','right');}, false);
+addRowTop.addEventListener('click', function () {setMap('row','add','top');}, false);
+addRowUnder.addEventListener('click', function () {setMap('row','add','under');}, false);
+delRowTop.addEventListener('click', function () {setMap('row','del','top');}, false);
+delRowUnder.addEventListener('click', function () {setMap('row','del','under');}, false);
 previewLink.addEventListener('click', showPreview, false);
 rewrite.addEventListener('click', doRewrite, false);
 DlLink.addEventListener('click', downloadCanvas, false);
@@ -208,48 +220,98 @@ function setCurrentMapChip(evt) {
 }
 
 //マップを表示する
-function setMap(direction, mode) {
+function setMap(direction, mode, side) {
 	//マップを退避
 	var evacuateMap = mapContext.getImageData(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
 	if (direction == 'row') {
         if (mode == 'add') {
-			//一行増やす
-			mapRowNum++;
-			mapCanvas.setAttribute('height', mapRowNum*mapLength);
-			mapCanvas.setAttribute('width', mapColNum*mapLength);
-			mapContext.putImageData(evacuateMap, 0, 0);
-			setArrayMaptipType('add', 'row');
-        } else if (mode == 'del') {
-			//一行減らす
-			if (mapRowNum == 1) {
-				return;
+			if (side == 'top') {
+				//一行増やす
+				mapRowNum++;
+				mapCanvas.setAttribute('height', mapRowNum*mapLength);
+				mapCanvas.setAttribute('width', mapColNum*mapLength);
+				mapContext.putImageData(evacuateMap, 0, mapLength);
+				setArrayMaptipType('add', 'row', 'top');
+			} else if (side == 'under') {
+				//一行増やす
+				mapRowNum++;
+				mapCanvas.setAttribute('height', mapRowNum*mapLength);
+				mapCanvas.setAttribute('width', mapColNum*mapLength);
+				mapContext.putImageData(evacuateMap, 0, 0);
+				setArrayMaptipType('add', 'row', 'under');
+			} else {
+				//何もしない
 			}
-			mapRowNum--;
-			mapCanvas.setAttribute('height', mapRowNum*mapLength);
-			mapCanvas.setAttribute('width', mapColNum*mapLength);
-			mapContext.putImageData(evacuateMap, 0, 0);
-			setArrayMaptipType('del', 'row');
+        } else if (mode == 'del') {
+			if (side == 'top') {
+				//一行減らす
+				if (mapRowNum == 1) {
+					return;
+				}
+				mapRowNum--;
+				mapCanvas.setAttribute('height', mapRowNum*mapLength);
+				mapCanvas.setAttribute('width', mapColNum*mapLength);
+				mapContext.putImageData(evacuateMap, 0, -mapLength);
+				setArrayMaptipType('del', 'row', 'top');
+			} else if (side == 'under') {
+				//一行減らす
+				if (mapRowNum == 1) {
+					return;
+				}
+				mapRowNum--;
+				mapCanvas.setAttribute('height', mapRowNum*mapLength);
+				mapCanvas.setAttribute('width', mapColNum*mapLength);
+				mapContext.putImageData(evacuateMap, 0, 0);
+				setArrayMaptipType('del', 'row', 'under');
+			} else {
+				//何もしない
+			}
         } else {
 			//何もしない
         }
     } else if (direction == 'col') {
         if (mode == 'add') {
-			//一列増やす
-			mapColNum++;
-			mapCanvas.setAttribute('height', mapRowNum*mapLength);
-			mapCanvas.setAttribute('width', mapColNum*mapLength);
-			mapContext.putImageData(evacuateMap, 0, 0);
-			setArrayMaptipType('add', 'col');
-        } else if (mode == 'del') {
-			//一列減らす
-			if (mapColNum == 1) {
-				return;
+			if (side == 'left') {
+				//一列増やす
+				mapColNum++;
+				mapCanvas.setAttribute('height', mapRowNum*mapLength);
+				mapCanvas.setAttribute('width', mapColNum*mapLength);
+				mapContext.putImageData(evacuateMap, mapLength, 0);
+				setArrayMaptipType('add', 'col', 'left');
+			} else if (side == 'right') {
+				//一列増やす
+				mapColNum++;
+				mapCanvas.setAttribute('height', mapRowNum*mapLength);
+				mapCanvas.setAttribute('width', mapColNum*mapLength);
+				mapContext.putImageData(evacuateMap, 0, 0);
+				setArrayMaptipType('add', 'col', 'right');
+			} else {
+				//何もしない
 			}
-			mapColNum--;
-			mapCanvas.setAttribute('height', mapRowNum*mapLength);
-			mapCanvas.setAttribute('width', mapColNum*mapLength);
-			mapContext.putImageData(evacuateMap, 0, 0);
-			setArrayMaptipType('del', 'col');
+        } else if (mode == 'del') {
+			if (side == 'left') {
+				//一列減らす
+				if (mapColNum == 1) {
+					return;
+				}
+				mapColNum--;
+				mapCanvas.setAttribute('height', mapRowNum*mapLength);
+				mapCanvas.setAttribute('width', mapColNum*mapLength);
+				mapContext.putImageData(evacuateMap, -mapLength, 0);
+				setArrayMaptipType('del', 'col', 'left');
+			} else if (side == 'right') {
+				//一列減らす
+				if (mapColNum == 1) {
+					return;
+				}
+				mapColNum--;
+				mapCanvas.setAttribute('height', mapRowNum*mapLength);
+				mapCanvas.setAttribute('width', mapColNum*mapLength);
+				mapContext.putImageData(evacuateMap, 0, 0);
+				setArrayMaptipType('del', 'col', 'right');
+			} else {
+				//何もしない
+			}
         } else {
             //何もしない
         }
@@ -524,7 +586,7 @@ function downloadCanvas(evt) {
 }
 
 //マップチップ属性配列をセットする
-function setArrayMaptipType (mode, direction) {
+function setArrayMaptipType (mode, direction, side) {
 	if (mode == 'load') {
 		//マップチップ属性デフォルトセット
 		for (var i=0; i<mapRowNum; i++) {
@@ -535,29 +597,61 @@ function setArrayMaptipType (mode, direction) {
 		}
 	} else if (mode == 'add') {
 		if (direction == 'row') {
-			arrayMaptipType[mapRowNum-1] = [];
-			for (var i=0; i<mapColNum; i++) {
-				arrayMaptipType[mapRowNum-1][i] = 0;
+			if (side == 'top') {
+				arrayMaptipType.unshift(new Array());
+				for (var i=0; i<mapColNum; i++) {
+					arrayMaptipType[0][i] = 0;
+				}
+			} else if (side == 'under') {
+				arrayMaptipType.push(new Array());
+				for (var i=0; i<mapColNum; i++) {
+					arrayMaptipType[mapRowNum-1][i] = 0;
+				}
+			} else {
+				//何もしない
 			}
 		} else if (direction == 'col') {
-			for (var i=0; i<mapRowNum; i++) {
-				arrayMaptipType[i][mapColNum-1] = 0;
+			if (side == 'left') {
+				for (var i=0; i<mapRowNum; i++) {
+					arrayMaptipType[i].unshift(new Array());
+					arrayMaptipType[i][0] = 0;
+				}
+			} else if (side == 'right') {
+				for (var i=0; i<mapRowNum; i++) {
+					arrayMaptipType[i].push(new Array());
+					arrayMaptipType[i][mapColNum-1] = 0;
+				}
+			} else {
+				//何もしない
 			}
 		} else {
-
+			//何もしない
 		}
 		
 	} else if (mode == 'del') {
 		if (direction == 'row') {
-			arrayMaptipType.pop();
+			if (side == 'top') {
+				arrayMaptipType.shift();
+			} else if (side == 'under') {
+				arrayMaptipType.pop();
+			} else {
+				//何もしない
+			}
 		} else if (direction == 'col') {
-			for (var i=0; i<mapRowNum; i++) {
-				arrayMaptipType[i].pop();
+			if (side == 'left') {
+				for (var i=0; i<mapRowNum; i++) {
+					arrayMaptipType[i].shift();
+				}
+			} else if (side == 'right') {
+				for (var i=0; i<mapRowNum; i++) {
+					arrayMaptipType[i].pop();
+				}
+			} else {
+				//何もしない
 			}
 		} else {
-
+			//何もしない
 		}
-		
 	} else if (mode == 'shift') {
 		if (direction == 'left') {
 			//一番左のマップチップの値
