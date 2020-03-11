@@ -58,6 +58,7 @@ class mapEditor {
             '.DS_Store'
         );
         $projects = '<select id="oldProjectName" name="oldProjectName">';
+        $projects .= '<option value="">プロジェクトを選択</option>';
         foreach ($dirs AS $dir) {
             //特定のディレクトリの場合は表示させない
             if (in_array($dir, $excludes)) {
@@ -65,11 +66,49 @@ class mapEditor {
             }
             //最初の要素を選択状態に
             if ($dir === reset($dirs)) {
-                $projects .= '<option value="' . $dir . '" selected>' . $dir . '</option>';
+                $projects .= '<option value="' . $dir . '">' . $dir . '</option>';
             }
             $projects .= '<option value="' . $dir . '">' . $dir . '</option>';
         }
         $projects .= '</select>';
+        return $projects;
+    }
+
+    /**
+     * 既存のプロジェクトのデータ（画像
+     * return プロジェクトのセレクトボックス
+     */
+    function getProjectsData() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        $projects = $this->getProjects();
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            $project = '<div id="'. $dir .'" class="eachProjectContainer">';
+            //プロジェクトのマップと、マップデータを探しにいく
+            //ディレクトリの中のマップ画像パスを取得する
+            $i = 0; //マップ画像インデックス
+            foreach(glob($this->projectDirPath . $dir . '/*.png') AS $pngFile){
+                if(is_file($pngFile)){
+                    $pngBaseName = basename($pngFile, '.png');
+                    $project .= '<div  id="'. $pngBaseName. '" class="eachMapContainer">';
+                    $project .= '<p class="mapNames">'. $pngBaseName. '</p>';
+                    $project .= '<img src="' . $pngFile .'" class="maps" width="200" height="150" alt="'. $pngBaseName .'">'; 
+                    $project .= '</div>';
+                    $i++;
+                }
+            }
+            $project .= '</div>';
+            $projects .= $project;
+        }
         return $projects;
     }
 
@@ -142,6 +181,40 @@ class mapEditor {
         return false;
     }
 
+    /**
+     * マップデータを更新する
+     * param1 : 既存プロジェクト名
+     * param2 : param1 : マップ画像データ(ベース64エンコードずみのもの)
+     * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
+     * return bool
+     */
+    function updateMapData($oldProjectName, $mapImageData, $mapObjData, $mapName, $projectData) {
+        //既存プロジェクトのパスを保存
+        $oldProjectPath = $this->projectDirPath . $oldProjectName;
+        //既存プロジェクトがあるか調べる
+        if(file_exists($oldProjectPath)) {
+            if(file_exists($oldProjectPath.'/'.$mapName.'.png')) {
+                //マップデータデコード
+                $decodedImageData = base64_decode($mapImageData);
+                //マップ画像を保存
+                $fp = fopen($oldProjectPath . "/" . $mapName . ".png", "wb");
+                fwrite($fp, $decodedImageData);
+                fclose($fp);
+                //マップオブジェクトデータを保存
+                $fp = fopen($oldProjectPath . "/" . $mapName . ".json", "wb");
+                fwrite($fp, $mapObjData);
+                fclose($fp);
+                //プロジェクトデータファイルを保存
+                $fp = fopen($oldProjectPath . "/projectData.json", "wb");
+                fwrite($fp, $projectData);
+                fclose($fp);
+
+                return true;
+            }
+        }
+        return false;
+    }
+
     function isAdmin ($id, $pas) {
         global $adminId;
         global $adminPas;
@@ -160,6 +233,18 @@ class mapEditor {
         $html .= '<br><p>マップ名を入力</p>';
         $html .= '<input type="text" id="mapName" name="mapName"><br>';        
         $html .= '<span id="save-map-data">この内容でサーバに保存</span>';
+        $html .= '<input type="hidden" name="map_image_data" value="" />';
+        $html .= '<input type="hidden" name="map_obj_data" value="" />';
+        $html .= '<input type="hidden" name="project_data" value="" />';
+        $html .= '</form></div>';
+        return $html;
+    }
+
+    function getMapUpdateContainer() {
+        $html = '<div id="map-update-container"><form name="update_map_data" action="" method="post">';
+        $html .= '<input type="text" id="updateMapProject" name="updateMapProject" value="" readonly="readonly"><br>';
+        $html .= '<input type="text" id="updateMapName" name="updateMapName" value="" readonly="readonly"><br>';
+        $html .= '<span id="update-map-data">マップを更新</span>';
         $html .= '<input type="hidden" name="map_image_data" value="" />';
         $html .= '<input type="hidden" name="map_obj_data" value="" />';
         $html .= '<input type="hidden" name="project_data" value="" />';

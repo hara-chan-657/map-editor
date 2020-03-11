@@ -36,6 +36,14 @@ body {
 	margin: 0px;
 }
 
+#selectedMapName {
+	display: inline-block;
+}
+
+#clearSelectedMapButton {
+	display: none;
+}
+
 #back {
 	display: none;
 }
@@ -140,6 +148,16 @@ body {
 	background-image: url("../image/map-editor/mapBG.png");
 }
 
+.eachProjectContainer {
+	overflow: hidden;
+	display: none;
+}
+
+.eachMapContainer {
+    float: left;
+	margin: 0px 3px;
+}
+
 #preview-link-container {
 	display: block;
 	margin: 30px 0px;
@@ -192,6 +210,10 @@ body {
 	margin-top: 20px;
 	margin-left: 30px;
 	cursor: pointer;
+}
+
+#map-update-container {
+	display: none;
 }
 
 

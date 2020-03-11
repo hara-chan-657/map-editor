@@ -9,21 +9,24 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 	$pas = $_GET['pas'];
 	$adminRes = $obj->isAdmin($id, $pas);
 	if ($adminRes) {
-		$saveMapContainer = $obj->getSaveMapContainer();
+        $saveMapContainer = $obj->getSaveMapContainer();
+        $mapUpdateContainer = $obj->getMapUpdateContainer();
+        $projectsData = $obj->getProjectsData();
 	}
 } else {
-	$saveMapContainer = '';
+    $saveMapContainer = '';
+    $projectsData = '';
 }
 
 if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
     //マップ画像データとマップオブジェクトデータを取得
     $mapImageData = $_POST['map_image_data'];
     $mapObjData = $_POST['map_obj_data'];
-    $mapName = $_POST['mapName'];
 
     if (isset($_POST['oldProjectName'])) {
         //既存プロジェクトに保存の場合
         $oldProjectName = $_POST['oldProjectName'];
+        $mapName = $_POST['mapName'];
         $ret = $obj->addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData, $mapName);
         if ($ret) {
             echo '保存しました！';
@@ -33,6 +36,7 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
     } else if (isset($_POST['newProjectName'])) {
         //新規プロジェクトに保存の場合
         $newProjectName = $_POST['newProjectName'];
+        $mapName = $_POST['mapName'];
         $projectData = $_POST['project_data'];
         $ret = $obj->addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData, $mapName, $projectData);
         if ($ret) {
@@ -41,17 +45,21 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
             echo $ret;
         }
     } else {
-
+        //マップ更新の場合
+        $updateMapProject = $_POST['updateMapProject'];
+        $mapName = $_POST['updateMapName'];
+        $projectData = $_POST['project_data'];
+        $ret = $obj->updateMapData($updateMapProject, $mapImageData, $mapObjData, $mapName, $projectData);
+        if ($ret) {
+            echo '保存しました！';
+        } else {
+            echo $ret;
+        }
     }
-
-
 }
 
 //初期表示のためのマップチップ取得
 $mapChips = $obj->getMapChips();
-
-//プロジェクトリスト(セレクトボックス)を取得
-$projectSelect = $obj->getProjects();
 
 ?>
 <!DOCTYPE html>
@@ -97,10 +105,13 @@ $projectSelect = $obj->getProjects();
         <div id="canvas-container">
             <div id="mapStatusContainer">
                 <p id="mapStatus"></p>
+                <p id="selectedMapName"></p>
+                <button id="clearSelectedMapButton">選択中マップの編集を中止する</button>
             </div>
             <div id="mapContainer">
                 <div id="mapBG">
                     <canvas id="mapCanvas"></canvas>
+                    <img src="" id="currentMapImage" style="display:none">
                 </div>
             </div>
             <div id="mapChipContainer">
@@ -182,6 +193,9 @@ $projectSelect = $obj->getProjects();
 		        <span><label for="preview-link" id="previewLinkButton">プレビュー&ダウンロード</label></span>
 		        <button id="preview-link">プレビュー&ダウンロード</button>
             </div>
+            <div id="projectsContainer">
+                <?php echo $projectsData ?>
+            </div>
         </div>
     </div>
     <div id="preview-container">
@@ -190,6 +204,7 @@ $projectSelect = $obj->getProjects();
 		<span id="rewrite">書き直す</span>
         <a id="download-link" href="" download="">ダウンロード</a>
         <?php echo $saveMapContainer ?>
+        <?php echo $mapUpdateContainer ?>
     </div>
 
     <script src="./js/map-editor.js"></script>
