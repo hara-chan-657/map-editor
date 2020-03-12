@@ -768,24 +768,60 @@ function editMap(evt) {
 		//スタート位置(マップごとの)
 		startX = tmpPositionX;
     	startY = tmpPositionY;
-
     	//現在モードid取得
 		var currentModeId = currentModeElement[0].id;
-
+		//マップ属性を更新前に退避
+		var tmpEvacuateMapTipe = arrayMaptipType;
     	if (currentModeId == 'put') {
-        	//現在チップをマップに表示
-			mapContext.drawImage(currentMapChip, mapLength*startX, mapLength*startY);
 			//マップチップ属性を更新
 			//マップチップの縦横分更新
 			for (i=0; i<currentMapChipRowNum; i++) {
 				for (j=0; j<currentMapChipColNum; j++) {
+					if (startMapFlg) {
+						if (startY+i == projectDataObj['startPosY'] && startX+j == projectDataObj['startPosX']) {
+							var confirmTxt = 'スタートポジションを含む範囲を編集しようとしています。\n編集を行うとスタートポジションの解除およびスタートプロジェクトからも解除されます\n\nこの作業は取り消せません\nよろしいですか？';
+							var ret = confirm(confirmTxt);
+							if (ret) {
+								//OKなら削除処理
+								projectDataObj['startMap'] = 'null';
+								projectDataObj['startPosX'] = 'null';
+								projectDataObj['startPosY'] = 'null';
+								//フラグオフ
+								startMapFlg = false;							
+							} else {
+								//消さない場合はマップ属性を元に戻してリターン
+								arrayMaptipType = tmpEvacuateMapTipe;
+								return;
+							}
+						}
+					}
 					//マップ更新時、イベント等の情報をリセットするために配列を初期化
 					arrayMaptipType[startY+i][startX+j] = [];
 					//初期化後マップ属性を配置
 					arrayMaptipType[startY+i][startX+j] = currentMapChipType;
 				}
 			}
+        	//現在チップをマップに表示
+			mapContext.drawImage(currentMapChip, mapLength*startX, mapLength*startY);
     	} else if (currentModeId == 'delete') {
+			if (startMapFlg) {
+				if (startY == projectDataObj['startPosY'] && startX == projectDataObj['startPosX']) {
+					var confirmTxt = 'スタートポジションを含む範囲を編集しようとしています。\n編集を行うとスタートポジションの解除およびスタートプロジェクトからも解除されます\n\nこの作業は取り消せません\nよろしいですか？';
+					var ret = confirm(confirmTxt);
+					if (ret) {
+						//OKなら削除処理
+						projectDataObj['startMap'] = 'null';
+						projectDataObj['startPosX'] = 'null';
+						projectDataObj['startPosY'] = 'null';
+						//フラグオフ
+						startMapFlg = false;							
+					} else {
+						//消さない場合はマップ属性を元に戻してリターン
+						arrayMaptipType = tmpEvacuateMapTipe;
+						return;
+					}
+				}
+			}
 			//マップチップ消去
 			mapContext.clearRect(mapLength*startX, mapLength*startY, mapLength, mapLength);
 			//マップ更新時、イベント等の情報をリセットするために配列を初期化
