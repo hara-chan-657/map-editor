@@ -779,6 +779,8 @@ function editMap(evt) {
 				for (j=0; j<currentMapChipColNum; j++) {
 					if (startMapFlg) {
 						if (startY+i == projectDataObj['startPosY'] && startX+j == projectDataObj['startPosX']) {
+							//確認ウィンドウを出す前にドラッグフラグをfalseに
+							setDraggingFlg(false);
 							var confirmTxt = 'スタートポジションを含む範囲を編集しようとしています。\n編集を行うとスタートポジションの解除およびスタートプロジェクトからも解除されます\n\nこの作業は取り消せません\nよろしいですか？';
 							var ret = confirm(confirmTxt);
 							if (ret) {
@@ -806,6 +808,8 @@ function editMap(evt) {
     	} else if (currentModeId == 'delete') {
 			if (startMapFlg) {
 				if (startY == projectDataObj['startPosY'] && startX == projectDataObj['startPosX']) {
+					//確認ウィンドウを出す前にドラッグフラグをfalseに
+					setDraggingFlg(false);
 					var confirmTxt = 'スタートポジションを含む範囲を編集しようとしています。\n編集を行うとスタートポジションの解除およびスタートプロジェクトからも解除されます\n\nこの作業は取り消せません\nよろしいですか？';
 					var ret = confirm(confirmTxt);
 					if (ret) {
