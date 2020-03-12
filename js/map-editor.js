@@ -5,10 +5,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 //================================ 各種変数 ===============================================//
-//戻る用配列
-var backArray = [];
-//進む用配列
-var forwardArray = [];
+// //戻る用配列
+// var backArray = [];
+// //進む用配列
+// var forwardArray = [];
 //ドラッグフラグ
 var draggingFlg = false;
 //現在マップチップキャンバスたて横
@@ -47,14 +47,14 @@ var editContainer = document.getElementById('editContainer');
 var option = document.getElementsByClassName('option');
 //現在モード要素
 var currentModeElement = document.getElementsByClassName('mode-on');
-//戻る
-var back = document.getElementById('back');
-//戻るダミー
-var backDummy = document.getElementById('backDummy');
-//進む
-var forward = document.getElementById('forward');
-//進むダミー
-var forwardDummy = document.getElementById('forwardDummy');
+// //戻る
+// var back = document.getElementById('back');
+// //戻るダミー
+// var backDummy = document.getElementById('backDummy');
+// //進む
+// var forward = document.getElementById('forward');
+// //進むダミー
+// var forwardDummy = document.getElementById('forwardDummy');
 //プット
 var put = document.getElementById('put');
 //デリート
@@ -172,8 +172,8 @@ for (var i=0; i<unfoldButtons.length; i++) {
 for (var i=0; i<foldButtons.length; i++) {
 	foldButtons[i].addEventListener('click', function(evt) {changeCategoryDisplay(evt, 'fold');}, false);
 }
-back.addEventListener('click', function() {if (backArray.length > 0) doBack();}, false);
-forward.addEventListener('click', function() {if (forwardArray.length > 0) doForward();}, false);
+// back.addEventListener('click', function() {if (backArray.length > 0) doBack();}, false);
+// forward.addEventListener('click', function() {if (forwardArray.length > 0) doForward();}, false);
 put.addEventListener('click', function (evt) {setCurrentMode(evt);}, false);
 del.addEventListener('click', function (evt) {setCurrentMode(evt);}, false);
 shiftLeft.addEventListener('click', function () {shiftCanvas('left');}, false);
@@ -511,61 +511,61 @@ function hideDetail(evt) {
 	}
 }
 
-//マップを一動作前の状態に戻す
-function doBack() {
-	//戻るよう配列の最後（最新）のデータを、進む用配列に退避
-	var lastData = backArray[backArray.length-1];
-	backArray.pop();
-	forwardArray.push(lastData);
-	//マップをクリア
-	mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
-	//一個前（だった）の戻る用配列のcanvasを表示
-	if (backArray.length > 0) {
-		var preCanvas = backArray[backArray.length-1];
-		mapContext.putImageData(preCanvas,0,0);
-	} else {
-		//もう戻れない場合は何もせず、戻るを非活性に
-		back.style.display = "none";
-		backDummy.style.display = "inline";
-	}
-	if (forwardArray.length > 0) {
-		forwardDummy.style.display = "none";
-		forward.style.display = "inline";
-	}
-}
+// //マップを一動作前の状態に戻す
+// function doBack() {
+// 	//戻るよう配列の最後（最新）のデータを、進む用配列に退避
+// 	var lastData = backArray[backArray.length-1];
+// 	backArray.pop();
+// 	forwardArray.push(lastData);
+// 	//マップをクリア
+// 	mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
+// 	//一個前（だった）の戻る用配列のcanvasを表示
+// 	if (backArray.length > 0) {
+// 		var preCanvas = backArray[backArray.length-1];
+// 		mapContext.putImageData(preCanvas,0,0);
+// 	} else {
+// 		//もう戻れない場合は何もせず、戻るを非活性に
+// 		back.style.display = "none";
+// 		backDummy.style.display = "inline";
+// 	}
+// 	if (forwardArray.length > 0) {
+// 		forwardDummy.style.display = "none";
+// 		forward.style.display = "inline";
+// 	}
+// }
 
-//マップの状態を戻したものを一個進める
-function doForward() {
-	//進めるよう配列から、戻るよう配列に戻す
-	var lastData = forwardArray[forwardArray.length-1];
-	forwardArray.pop();
-	backArray.push(lastData);
-	back.style.display = "inline";
-	backDummy.style.display = "none";
-	//マップをクリア
-	mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
-	//最新の戻る用配列のcanvasを表示
-	var newCanvas = backArray[backArray.length-1];
-	mapContext.putImageData(newCanvas,0,0);
-	//進む配列がなくなった段階で進むを非活性に
-	if (forwardArray.length == 0) {
-		forwardDummy.style.display = "inline";
-		forward.style.display = "none";
-	}
-}
+// //マップの状態を戻したものを一個進める
+// function doForward() {
+// 	//進めるよう配列から、戻るよう配列に戻す
+// 	var lastData = forwardArray[forwardArray.length-1];
+// 	forwardArray.pop();
+// 	backArray.push(lastData);
+// 	back.style.display = "inline";
+// 	backDummy.style.display = "none";
+// 	//マップをクリア
+// 	mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
+// 	//最新の戻る用配列のcanvasを表示
+// 	var newCanvas = backArray[backArray.length-1];
+// 	mapContext.putImageData(newCanvas,0,0);
+// 	//進む配列がなくなった段階で進むを非活性に
+// 	if (forwardArray.length == 0) {
+// 		forwardDummy.style.display = "inline";
+// 		forward.style.display = "none";
+// 	}
+// }
 
-//戻る進むを更新する
-function updataBackForward() {
-		//進む配列初期化
-		forwardArray = [];
-		forward.style.display = "none";
-		forwardDummy.style.display = "inline";
-		//戻る用配列更新
-		backArray.push(mapContext.getImageData(0,0,mapColNum*mapLength,mapRowNum*mapLength));
-		//戻るを活性化
-		backDummy.style.display = "none";
-		back.style.display = "inline";
-}
+// //戻る進むを更新する
+// function updataBackForward() {
+// 		//進む配列初期化
+// 		forwardArray = [];
+// 		forward.style.display = "none";
+// 		forwardDummy.style.display = "inline";
+// 		//戻る用配列更新
+// 		backArray.push(mapContext.getImageData(0,0,mapColNum*mapLength,mapRowNum*mapLength));
+// 		//戻るを活性化
+// 		backDummy.style.display = "none";
+// 		back.style.display = "inline";
+// }
 
 //スタートマップの位置を編集する
 function editStartMapPos(mode, side) {
@@ -733,20 +733,20 @@ function shiftCanvas (direction) {
 		//何もしない
 	}
 	//戻る進むを更新
-	updataBackForward();
+	//updataBackForward();
 }
 
 //ドラッグフラグをセットする
 function setDraggingFlg (bool) {
 	draggingFlg = bool;
 	// var currentModeId = currentModeElement[0].id;
-	if (bool == false) {
-		//戻る進むを更新する
-		updataBackForward();
-		//スタート位置を初期化
-		startX = -1;
-		startY = -1;
-	}
+	// if (bool == false) {
+	// 	//戻る進むを更新する
+	// 	updataBackForward();
+	// 	//スタート位置を初期化
+	// 	startX = -1;
+	// 	startY = -1;
+	// }
 }
 
 //マップを編集する
