@@ -12,10 +12,22 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
         $saveMapContainer = $obj->getSaveMapContainer();
         $mapUpdateContainer = $obj->getMapUpdateContainer();
         $projectsData = $obj->getProjectsData();
+        $deleteMaptipBtn = $obj->getdeleteMaptipBtn();
 	}
 } else {
     $saveMapContainer = '';
     $projectsData = '';
+    $deleteMaptipBtn = '';
+}
+
+if (isset($_POST['mapchipPath'])) {
+    $mapchipPath = $_POST['mapchipPath'];
+    $ret = $obj->deleteMapchip($mapchipPath);
+    if ($ret) {
+        echo '削除しました！';
+    } else {
+        echo $ret;
+    }
 }
 
 if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
@@ -116,7 +128,7 @@ $mapChips = $obj->getMapChips();
             </div>
             <div id="mapChipContainer">
                 <div id="currentMapChipContainer">
-                    <p class="mapCategory">現在選択中のチップ<span id="currentMapChipSize"></p>
+                    <p class="mapCategory">現在選択中のチップ<span id="currentMapChipSize"><?php echo $deleteMaptipBtn ?></p>
                     <div id="currentMapChipBG">
                         <img src-"" id="currentMapChip">
                     </div>

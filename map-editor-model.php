@@ -251,6 +251,24 @@ class mapEditor {
         $html .= '</form></div>';
         return $html;
     }
+
+    function getdeleteMaptipBtn() {
+        $html = '</span><span id="deleteMapchip">削除</span>';
+        $html .= '<div id="deleteMapchipContainer"><form name="deleteMapchip" action="" method="post">';
+        $html .= '<input type="hidden" name="mapchipPath" value="" /></form></div>';
+        return $html;
+    }
+
+    function deleteMapchip($mapchipPath) {
+        $mapchipPath = preg_replace('/http.*?\/map-editor\//', '', $mapchipPath); //preg_replaceの使い方（//で囲むに注意）
+        var_dump($mapchipPath);
+        if (unlink($mapchipPath)){
+            return true;
+          }else{
+            chmod($mapchipPath, 0644);
+            return $mapchipPath.'の削除に失敗しました。';
+          }
+    }
 }
 
 ?>

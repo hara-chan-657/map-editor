@@ -91,6 +91,11 @@ var selectedMapName = document.getElementById('selectedMapName');
 var clearSelectedMapButton = document.getElementById('clearSelectedMapButton');
 //現在マップチップ
 var currentMapChip = document.getElementById('currentMapChip');
+//マップチップ削除ボタン
+if (document.getElementById('deleteMapchip') != null) {
+	var deleteMapchipButton = document.getElementById('deleteMapchip');
+	deleteMapchipButton.addEventListener('click', deleteMapchip, false);
+}
 //現在マップチップサイズ
 var currentMapChipSize = document.getElementById('currentMapChipSize');
 // var currentMapChipContext = currentMapChipCanvas.getContext('2d');
@@ -209,6 +214,19 @@ function setDefault() {
 	setMap();
 	setArrayMaptipType('load');
 	setCurrentMode();
+}
+
+//マップチップを削除する
+function deleteMapchip() {
+	//マップチップの情報を出してアラート
+	var res = confirm('選択中のマップチップをサーバから削除します。\nよろしいですか？');
+	if (res) {
+		//フォーム送信
+		var delMapchipForm = document.forms['deleteMapchip'];
+		delMapchipForm.elements['mapchipPath'].value = currentMapChip.src;
+		delMapchipForm.submit();
+	}
+
 }
 
 //選択中マップ解除
@@ -354,6 +372,8 @@ function setCurrentMapChip(evt) {
 	currentMapChipColNum = currentMapChip.naturalWidth/32;
 	var mapSizeTxt = ' (' + currentMapChipRowNum + '×'　+ currentMapChipColNum + 'マス)';
 	currentMapChipSize.innerText = mapSizeTxt;
+	//マップチップ削除のボタンを表示する
+	deleteMapchipButton.style.display = 'inline-block';
 }
 
 //マップを表示する
