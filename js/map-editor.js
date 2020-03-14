@@ -126,7 +126,10 @@ var mapContainer = document.getElementById('mapContainer');
 var mapCanvas = document.getElementById('mapCanvas');
 var mapContext = mapCanvas.getContext('2d');
 //既存プロジェクト選択ボックス
-var oldProjectName = document.getElementById('oldProjectName');
+if (document.getElementById('oldProjectName') != null) {
+	var oldProjectName = document.getElementById('oldProjectName');
+	oldProjectName.addEventListener('change', function () {ChangeOldProjectData(this);}, false);
+}
 //既存プロジェクトのマップ画像
 var maps = document.getElementsByClassName('maps');
 //プロジェクトのデータオブジェクト
@@ -142,9 +145,14 @@ var rewrite = document.getElementById('rewrite');
 //ダウンロードボタン
 var DlLink = document.getElementById('download-link');
 //マップ保存コンテナ
-var saveMapContainer = document.getElementById('save-map-container');
+if (document.getElementById('save-map-container') != null) {
+	var saveMapContainer = document.getElementById('save-map-container');
+}
 //この内容で保存ボタン
-var saveMapData = document.getElementById('save-map-data');
+if (document.getElementById('save-map-data') != null) {
+	var saveMapData = document.getElementById('save-map-data');
+	saveMapData.addEventListener('click', saveMapDataToSever, false);
+}
 //マップ更新コンテナ
 var mapUpdateContainer = document.getElementById('map-update-container');
 //更新マッププロジェクト
@@ -152,7 +160,10 @@ var updateMapProject = document.getElementById('updateMapProject');
 //更新マップ名
 var updateMapName = document.getElementById('updateMapName');
 //マップ更新
-var updateMapData = document.getElementById('update-map-data');
+if (document.getElementById('update-map-data') != null) {
+	var updateMapData = document.getElementById('update-map-data');
+	updateMapData.addEventListener('click', updateMapDataToSever, false);
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -194,15 +205,12 @@ addRowUnder.addEventListener('click', function () {setMap('add','row','bottom');
 delRowTop.addEventListener('click', function () {setMap('del','row','top');}, false);
 delRowUnder.addEventListener('click', function () {setMap('del','row','bottom');}, false);
 clearSelectedMapButton.addEventListener('click', clearSelectedMap, false);
-oldProjectName.addEventListener('change', function () {ChangeOldProjectData(this);}, false);
 for (var i=0; i<maps.length; i++) {
 	maps[i].addEventListener('click', function(evt) {setEditMap(evt);}, false);
 }
 previewLink.addEventListener('click', showPreview, false);
 rewrite.addEventListener('click', doRewrite, false);
 DlLink.addEventListener('click', downloadCanvas, false);
-saveMapData.addEventListener('click', saveMapDataToSever, false);
-updateMapData.addEventListener('click', updateMapDataToSever, false);
 
 
 
@@ -373,7 +381,9 @@ function setCurrentMapChip(evt) {
 	var mapSizeTxt = ' (' + currentMapChipRowNum + '×'　+ currentMapChipColNum + 'マス)';
 	currentMapChipSize.innerText = mapSizeTxt;
 	//マップチップ削除のボタンを表示する
-	deleteMapchipButton.style.display = 'inline-block';
+	if (deleteMapchipButton != undefined) {
+		deleteMapchipButton.style.display = 'inline-block';
+	}
 }
 
 //マップを表示する

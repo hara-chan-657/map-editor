@@ -16,6 +16,7 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 	}
 } else {
     $saveMapContainer = '';
+    $mapUpdateContainer = '';
     $projectsData = '';
     $deleteMaptipBtn = '';
 }
