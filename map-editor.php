@@ -79,7 +79,7 @@ $mapChips = $obj->getMapChips();
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>map-editor</title>
+<title>mapEditor</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="apple-touch-icon" href=".png">
