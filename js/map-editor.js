@@ -243,7 +243,11 @@ function clearSelectedMap() {
         if (res) {
 			mapContext.clearRect(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
 			//マップチップ属性配列初期化
-			arrayMaptipType = [];
+			for (var i=0; i<arrayMaptipType.length; i++) {
+				for (var j=0; j<arrayMaptipType[i].length; j++) {
+					arrayMaptipType[i][j] = 0;
+				}
+			}
 			//スタートマップフラグをfalseに
 			startMapFlg = false;
 			//（一応）現在選択中画像のsrcクリア
