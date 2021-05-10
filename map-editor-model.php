@@ -21,28 +21,159 @@ class mapEditor {
     /**
      * マップチップを取得する
      */
+    // function getMapChips(){
+    //     //マップチップディレクトリのディレクトリ（カテゴリ）を取得する
+    //     $dirs = scandir($this->mapChipDirPath);
+    //     //表示させないディレクトリ配列
+    //     $excludes = array(
+    //         '.',
+    //         '..',
+    //         '.DS_Store'
+    //     );
+    //     foreach ($dirs AS $dir) {
+    //         //特定のディレクトリの場合は表示させない
+    //         if (in_array($dir, $excludes)) {
+    //             continue;
+    //         }
+    //         //ディレクトリの中のマップチップを取得する
+    //         foreach(glob($this->mapChipDirPath . $dir . '/*') AS $file){
+    //             if(is_file($file)){
+    //                 $mapChips[$dir][] = $file;
+    //             }
+    //         }
+    //     }
+    //     return $mapChips;
+    // }
+
+    /**
+     * マップチップを取得する
+     */
     function getMapChips(){
-        //マップチップディレクトリのディレクトリ（カテゴリ）を取得する
-        $dirs = scandir($this->mapChipDirPath);
         //表示させないディレクトリ配列
         $excludes = array(
             '.',
             '..',
             '.DS_Store'
         );
-        foreach ($dirs AS $dir) {
+        $retArray = array();
+        //マップチップディレクトリのディレクトリ（カテゴリ）を取得する
+        $projects = scandir($this->mapChipDirPath);
+        if ($this->checkIsDirEmpty($projects)) {
+            $retArray[0] = 'プロジェクトがありません';
+            return $retArray;
+        }
+        foreach ($projects AS $project) {
             //特定のディレクトリの場合は表示させない
-            if (in_array($dir, $excludes)) {
+            if (in_array($project, $excludes)) continue;
+            $mapTypes = scandir($this->mapChipDirPath . $project);
+            if ($this->checkIsDirEmpty($mapTypes)) {
+                $retArray[$project][0] = $project .'は空です';
                 continue;
             }
-            //ディレクトリの中のマップチップを取得する
-            foreach(glob($this->mapChipDirPath . $dir . '/*') AS $file){
-                if(is_file($file)){
-                    $mapChips[$dir][] = $file;
+            foreach ($mapTypes AS $mapType) {
+                //特定のディレクトリの場合は表示させない
+                if (in_array($mapType, $excludes)) continue;
+                //ここからはファイルとディレクトリが混在する。
+                $rets = scandir($this->mapChipDirPath . $project . '/' . $mapType);
+                if ($this->checkIsDirEmpty($rets)) {
+                    $retArray[$project][$mapType][0] = $mapType .'は空です';
+                    continue;
+                }
+                foreach ($rets AS $ret) {
+                    //特定のディレクトリの場合は表示させない
+                    if (in_array($ret, $excludes)) continue;
+                    if (substr($ret, -4) == '.png') {
+                        //マップファイルの場合
+                        $retArray[$project][$mapType][] = $ret;
+                    } else {
+                        //ディレクトリの場合
+                        //正直ここからはマップチップの構成が変わると階層をいじる必要が出てくるかも。まあそん時はそん時。
+                        $files = scandir($this->mapChipDirPath . $project . '/' . $mapType . '/' . $ret);
+                        if ($this->checkIsDirEmpty($files)) {
+                            //$retArray[$project][$mapType][$ret][0] = $project . '/' . $mapType . '/' . $ret. 'は空です';
+                            $retArray[$project][$mapType][$ret][0] = $ret. 'は空です';
+                            continue;
+                        }
+                        foreach ($files AS $file) {
+                            //特定のディレクトリの場合は表示させない
+                            if (in_array($file, $excludes)) continue;
+                            $retArray[$project][$mapType][$ret][] = $file;
+                        }
+                    }
                 }
             }
         }
-        return $mapChips;
+        return $retArray;
+    }
+
+    function checkIsDirEmpty($dir) {
+        if (count($dir) == 0) return true;
+        foreach ($dir AS $file) {
+            if ($file == '.' || $file == '..') continue;
+            return false;
+        }
+        return true;
+    }
+
+    function makeAllMapChipHtml($mapChips) {
+        $html = '';
+        if ($mapChips[0] == 'プロジェクトがありません') {
+            $html .= '<div>プロジェクトがありません</div>';
+            return $html;
+        }
+        foreach($mapChips AS $prjKey => $project){ 
+            if (substr($project[0], -9) == '空です') {
+                $html .= '<div style="color:red;">' . $project[0] . '</div>';
+                continue;
+            }
+            $html .= '<div class="Cprojects" style="color:red">';
+            //$html .= '<p>';
+            $html .= '<span class="unfoldButton">＋</span>';
+            $html .= '<span class="foldButton">ー</span>' . $prjKey;
+            //$html .= '</p>';
+            $html .= '</div>';
+            $html .= '<div class="acordion">';
+            foreach ($project AS $mapTypeKey => $mapType) {
+                if (substr($mapType[0], -9) == '空です') {
+                    $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $mapType[0] . '</div>';
+                    continue;
+                }
+                $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
+                //$html .= '<p>';
+                $html .= '<span class="unfoldButton">＋</span>';
+                $html .= '<span class="foldButton">ー</span>' . $mapTypeKey;
+                //$html .= '</p>';
+                $html .= '</div>';
+                $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
+                foreach ($mapType AS $mapkey => $map) {
+                    if (is_array($map)) {
+                        if (substr($map[0], -9) == '空です') {
+                            $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $map[0] . '</div>';
+                            // $html .= '</div>';
+                            continue;
+                        }
+                        $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
+                        //$html .= '<p class="projects">';
+                        $html .= '<span class="unfoldButton">＋</span>';
+                        $html .= '<span class="foldButton">ー</span>' . $mapkey;
+                        //$html .= '</p>';
+                        $html .= '</div>';
+                        $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
+                        foreach ($map AS $file) {
+                            //今のところここが最下層
+                            $html .= '<img src="'. $this->mapChipDirPath . $prjKey . '/' . $mapTypeKey . '/' . $mapkey . '/' .$file.'" alt="' . $mapTypeKey . '" class="mapchip">';
+                        }
+                        $html .= '</div>';
+                    } else {
+                        $html .= '<img src="'. $this->mapChipDirPath . $prjKey . '/' . $mapTypeKey . '/' . $map .'" alt="' . $mapTypeKey . '" class="mapchip">';
+                    }
+                    //$html .= '</div>';
+                }
+                $html .= '</div>';
+            }
+            $html .= '</div>';
+        }
+        return $html;
     }
 
     /**
@@ -152,7 +283,7 @@ class mapEditor {
      * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
      * return bool
      */
-    function addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData, $mapName) {
+    function addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData, $mapName, $projectData) {
         //既存プロジェクトのパスを保存
         $oldProjectPath = $this->projectDirPath . $oldProjectName;
         //既存プロジェクトがあるか調べる
@@ -168,6 +299,13 @@ class mapEditor {
                 $fp = fopen($oldProjectPath . "/" . $mapName . ".json", "wb");
                 fwrite($fp, $mapObjData);
                 fclose($fp);
+                //プロジェクトデータファイルを保存
+                //最初だけ作る
+                if (!file_exists($oldProjectPath . "/projectData.json")) {
+                    $fp = fopen($oldProjectPath . "/projectData.json", "wb");
+                    fwrite($fp, $projectData);
+                    fclose($fp);
+                }
 
                 return true;
 
@@ -228,8 +366,8 @@ class mapEditor {
         $html = '<div id="save-map-container"><form name="map_data" action="" method="post">';
         $html .= '<br><input type="radio" id="old" name="projectType" value="old" checked>既存のプロジェクトに追加<br>';
         $html .= $this->getProjects();
-        $html .= '<br><br><input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>';
-        $html .= '<input type="text" id="newProjectName" name="newProjectName"><br>';  
+        //$html .= '<br><br><input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>';
+        //$html .= '<input type="text" id="newProjectName" name="newProjectName"><br>';
         $html .= '<br><p>マップ名を入力</p>';
         $html .= '<input type="text" id="mapName" name="mapName"><br>';        
         $html .= '<span id="save-map-data">この内容でサーバに保存</span>';

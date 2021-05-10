@@ -6,7 +6,7 @@ body {
 #options {
 	height: 33px;
 	background-color:white;
-	max-width: 860px;
+	/*max-width: 860px;*/
 	padding: 2px;
 	margin-bottom:3px;
 }
@@ -66,6 +66,7 @@ body {
 	height: 460px;
 	width: 300px;
 	float: left;
+	
 }
 
 #currentMapChipBG {
@@ -76,6 +77,12 @@ body {
 #currentMapChip {
 	background-color: white;
 	border: 1px solid black;
+}
+
+#MprojectContainer {
+	padding-left: 5px;
+	height: 460px;
+	overflow: scroll;
 }
 
 #deleteMapchip {
@@ -98,6 +105,7 @@ body {
 	width: 680px;
 	height: 460px;
 	display: inline-block;
+	overflow: scroll;
 }
 
 .mapchip {
@@ -136,7 +144,7 @@ body {
 	cursor: pointer;
 }
 
-#maps {
+#projectContainer {
 	overflow: scroll;
 	max-height: 460px;
 	max-width: 360px;

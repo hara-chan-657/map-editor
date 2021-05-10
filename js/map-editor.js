@@ -5,10 +5,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 //================================ 各種変数 ===============================================//
-// //戻る用配列
-// var backArray = [];
-// //進む用配列
-// var forwardArray = [];
+//戻る用配列
+var backArray = [];
+var backArrayJson = [];
+//進む用配列
+var forwardArray = [];
+var forwardArrayJson = [];
 //ドラッグフラグ
 var draggingFlg = false;
 //現在マップチップキャンバスたて横
@@ -47,14 +49,14 @@ var editContainer = document.getElementById('editContainer');
 var option = document.getElementsByClassName('option');
 //現在モード要素
 var currentModeElement = document.getElementsByClassName('mode-on');
-// //戻る
-// var back = document.getElementById('back');
-// //戻るダミー
-// var backDummy = document.getElementById('backDummy');
+//戻る
+var back = document.getElementById('back');
+//進む
+var forward = document.getElementById('forward');
 // //進む
-// var forward = document.getElementById('forward');
+var forward = document.getElementById('forward');
 // //進むダミー
-// var forwardDummy = document.getElementById('forwardDummy');
+var forwardDummy = document.getElementById('forwardDummy');
 //プット
 var put = document.getElementById('put');
 //デリート
@@ -170,6 +172,7 @@ if (document.getElementById('update-map-data') != null) {
 ///////////////////////////////　　以下イベント   ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 window.addEventListener('load', setDefault, false);
+document.addEventListener('keydown', function (evt) {doKeyEvent(evt);}, false);
 for (var i=0; i<option.length; i++) {
 	option[i].addEventListener('mouseenter', function(evt) {showDetail(evt);}, false);
 }
@@ -188,8 +191,8 @@ for (var i=0; i<unfoldButtons.length; i++) {
 for (var i=0; i<foldButtons.length; i++) {
 	foldButtons[i].addEventListener('click', function(evt) {changeCategoryDisplay(evt, 'fold');}, false);
 }
-// back.addEventListener('click', function() {if (backArray.length > 0) doBack();}, false);
-// forward.addEventListener('click', function() {if (forwardArray.length > 0) doForward();}, false);
+back.addEventListener('click', function() {if (backArray.length > 0) doBack();}, false);
+forward.addEventListener('click', function() {if (forwardArray.length > 0) doForward();}, false);
 put.addEventListener('click', function (evt) {setCurrentMode(evt);}, false);
 del.addEventListener('click', function (evt) {setCurrentMode(evt);}, false);
 shiftLeft.addEventListener('click', function () {shiftCanvas('left');}, false);
@@ -222,6 +225,84 @@ function setDefault() {
 	setMap();
 	setArrayMaptipType('load');
 	setCurrentMode();
+}
+
+//キーボードからの入力でイベントを実行する
+function doKeyEvent (evt) {
+	//戻る
+	if (evt.key === 'z' && (evt.ctrlKey || evt.metaKey)) {
+		if (backArray.length > 0) {
+			doBack();
+		}
+	//進む
+	} else if (evt.key === 'u' && (evt.ctrlKey || event.metaKey)) {
+		if (forwardArray.length > 0) {
+			doForward();
+		}
+	} else {
+		return;
+	}
+}
+
+//canvasを一動作前の状態に戻す
+function doBack() {
+	//戻るよう配列の最後（最新）のデータを、進む用配列に退避
+	var lastData = backArray[backArray.length-1];
+	var lastDataJson = backArrayJson[backArrayJson.length-1].concat();
+	backArray.pop();
+	backArrayJson.pop();
+	forwardArray.push(lastData);
+	forwardArrayJson.push(lastDataJson);
+	//canvasをクリア
+	mapContext.clearRect(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
+	//一個前（だった）の戻る用配列のcanvasを表示
+	if (backArray.length > 0) {
+		var preCanvas = backArray[backArray.length-1];
+		mapContext.putImageData(preCanvas,0,0);
+		//一個前（だった）の戻る用配列jsonのjsonを現在のjsonに
+		arrayMaptipType = backArrayJson[backArrayJson.length-1].concat();
+	} else {
+		//もう戻れない場合
+		//setArrayMaptipType('load'); //マップチップ属性配列を初期化
+		for (var i=0; i<mapRowNum; i++) {
+			arrayMaptipType[i] = [];
+			for (var j=0; j<mapColNum; j++) {
+				arrayMaptipType[i][j] = 0;
+			}
+		}
+		//戻るを非活性に
+		back.style.display = "none";
+		backDummy.style.display = "inline";
+	}
+	if (forwardArray.length > 0) {
+		forwardDummy.style.display = "none";
+		forward.style.display = "inline";
+	}
+}
+
+//canvasの状態を戻したものを一個進める
+function doForward () {
+	//進めるよう配列から、戻るよう配列に戻す
+	var lastData = forwardArray[forwardArray.length-1];
+	var lastDataJson = forwardArrayJson[forwardArrayJson.length-1].concat();
+	forwardArray.pop();
+	forwardArrayJson.pop();
+	backArray.push(lastData);
+	backArrayJson.push(lastDataJson);
+	back.style.display = "inline";
+	backDummy.style.display = "none";
+	//canvasをクリア
+	mapContext.clearRect(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
+	//最新の戻る用配列のcanvasを表示
+	var newCanvas = backArray[backArray.length-1];
+	mapContext.putImageData(newCanvas,0,0);
+	//最新の戻る用配列jsonのjsonを現在のjsonに
+	arrayMaptipType = backArrayJson[backArrayJson.length-1].concat();
+	//進む配列がなくなった段階で進むを非活性に
+	if (forwardArray.length == 0) {
+		forwardDummy.style.display = "inline";
+		forward.style.display = "none";
+	}
 }
 
 //マップチップを削除する
@@ -320,6 +401,7 @@ function loadJsonToObj(projectContainer) {
 		//なんでホスト名は要らないのか不明!謎！
         //var url = 'https://hara-chan.com/rpg-editor/public/projects/' + currentProjectName + '/' + eachMapContainer[i].id + '.json';
 		var url = '../../rpg-editor/public/projects/' + currentProjectName + '/' + eachMapContainer[i].id + '.json';
+		url = decodeURI(url);
 		var xhr = new XMLHttpRequest();
         //同期処理なので、ここで毎回取得
 		xhr.open('GET', url, false);
@@ -332,6 +414,7 @@ function loadJsonToObj(projectContainer) {
     //プロジェクトデータをロードする
 	//var url = 'https://hara-chan.com/rpg-editor/public/projects/' + currentProjectName + '/projectData.json';
 	var url = '../../rpg-editor/public/projects/' + currentProjectName + '/projectData.json';
+	url = decodeURI(url);
     var xhr = new XMLHttpRequest();
     //同期処理（false）なので、ここで毎回取得
 	xhr.open('GET', url, false);
@@ -353,30 +436,41 @@ function setCurrentMapChip(evt) {
 	currentMapChip.src = evt.target.src;
 	//クリックしたチップのタイプ取得
 	var currentMapChipTypeId = evt.target.parentNode.parentNode.id;
+	var currentMapChipTypeId = evt.target.alt;
 	switch (currentMapChipTypeId) {
-		case 'characterIconContainer':
+		case 'character':
 			//ドラッグフラグ変更
 			currentMapChipType = 1;
 			break;
 
-		case 'mapIconContainer':
+		case 'map':
 			//ドラッグフラグ変更
 			currentMapChipType = 2;
 			break;
 
-		case 'mapPassIconContainer':
+		case 'mapPass':
 			//ドラッグフラグ変更
 			currentMapChipType = 3;
 			break;
 
-		case 'toolIconContainer':
+		case 'tool':
 			//ドラッグフラグ変更
 			currentMapChipType = 4;
 			break;
 
-		case 'buildingIconContainer':
+		case 'building':
 			//ドラッグフラグ変更
 			currentMapChipType = 5;
+			break;
+
+		case 'mapRepeat':
+			//ドラッグフラグ変更
+			currentMapChipType = 6;
+			break;
+
+		case 'mapTurn':
+			//ドラッグフラグ変更
+			currentMapChipType = 7;
 			break;
 	}
 	//マップチップの縦横（マップチップ数）を取得する、画面にも表示する
@@ -392,6 +486,7 @@ function setCurrentMapChip(evt) {
 
 //マップを表示する
 function setMap(mode, direction, side) {
+
 	//マップを退避
 	var evacuateMap = mapContext.getImageData(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
 	if (direction == 'row') {
@@ -483,6 +578,18 @@ function setMap(mode, direction, side) {
 		mapCanvas.setAttribute('height', mapRowNum*mapLength);
 		mapCanvas.setAttribute('width', mapColNum*mapLength);
 	}
+
+	//マップの大きさを変更する際は、今までの大きさでの戻る進む用の配列をリセットする
+	backArray = [];
+	backArrayJson = [];
+	forwardArray = [];
+	forwardArrayJson = [];
+	// 戻る進むボタンも非活性に戻す
+	forward.style.display = "none";
+	forwardDummy.style.display = "inline";
+	back.style.display = "none";
+	backDummy.style.display = "inline";
+
 	mapBG.style.width = mapColNum*mapLength + 'px';
 	mapStatus.innerHTML = 'マップステータス <br>■ 縦：' + mapRowNum + '行(' + mapRowNum*mapLength + 'px) ■ 横：' + mapColNum + '列(' + mapColNum*mapLength + 'px)';
 }
@@ -719,6 +826,7 @@ function editStartMapPos(mode, side) {
 
 //キャンバスを上下左右にシフトする
 function shiftCanvas (direction) {
+
 	if (direction == 'left') {
 	//左シフト
 		var leftLine = mapContext.getImageData(0, 0, mapLength, mapRowNum*mapLength);
@@ -766,21 +874,38 @@ function shiftCanvas (direction) {
 	} else {
 		//何もしない
 	}
+	setDraggingFlg(false);
 	//戻る進むを更新
 	//updataBackForward();
 }
 
 //ドラッグフラグをセットする
 function setDraggingFlg (bool) {
-	draggingFlg = bool;
-	// var currentModeId = currentModeElement[0].id;
-	// if (bool == false) {
-	// 	//戻る進むを更新する
-	// 	updataBackForward();
-	// 	//スタート位置を初期化
-	// 	startX = -1;
-	// 	startY = -1;
-	// }
+	if (!currentMapChip.src.endsWith('.png')) {
+		alert('マップチップが選択されていません！（シフト時も選択してください）。');
+		return; 
+	}
+	draggingFlg = bool; // ここはドラッグフラグを引数の値で変更する。
+	if (!bool) { // マウスアップ時、戻る進むを更新する（canvasとjson。また、色の判定は行わない、めんどくさいので）
+		//進む配列初期化
+		forwardArray = [];
+		forwardArrayJson = [];
+		//進むを非活性化
+		forward.style.display = "none";
+		forwardDummy.style.display = "inline";
+		//戻る用配列更新
+		backArray.push(mapContext.getImageData(0, 0, mapColNum*mapLength, mapRowNum*mapLength));
+		var tmpRow = [];
+		for (var i=0; i<arrayMaptipType.length; i++) {
+			tmpRow.push(arrayMaptipType[i].concat()); //配列をpushするときは、concat()しないと参照渡しになってしまうので注意！
+		}
+		backArrayJson.push(tmpRow.concat());
+		//戻るを活性化
+		backDummy.style.display = "none";
+		back.style.display = "inline";
+		//canvas変更フラグも元に戻す
+		canvasChangeFlg = false;
+	}
 }
 
 //マップを編集する
@@ -1147,7 +1272,7 @@ function saveMapDataToSever() {
 		} else if (MapDataForm.oldProjectName.disabled) {
 			MapDataForm.oldProjectName.disabled = false;
 		} else {
-			MapDataForm.newProjectName.disabled = true;	
+			//MapDataForm.newProjectName.disabled = true;	
 			oldProjectName = MapDataForm.oldProjectName.value;
 			oldFlg = true;
 		}
@@ -1182,7 +1307,8 @@ function saveMapDataToSever() {
 			//アラートの結果もよければ、マップデータを保存して、サブミット
 			savaMaptipTypeAsJson('save');
 			saveMaptip('save');
-			setProjectData('save', newProjectName);
+			setProjectData('save', oldProjectName);
+			//setProjectData('save', newProjectName);
 			MapDataForm.submit();
 		} else {
 			MapDataForm.oldProjectName.disabled = false;

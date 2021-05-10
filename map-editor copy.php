@@ -99,15 +99,10 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
     <div id="header-container">
 		<img src="./image/map-editor/header.png" alt="ヘッダー画像">	
 	</div>
-    <ul>
-        <li style="color:red">※マップの大きさを変更した時点で、「戻る・進む」はリセットされます（これは仕様）</li>
-        <li style="color:red">※デリート時、「マップ属性用もどる配列」のデータを一つ多く更新してしまうバグがたまに起きる（発生条件不明、なのでデリート→もどるは注意）。</li>
-        <li style="color:red">※複数行・複数列のマップチップを使用する際は、はみ出ないように描画してください（めんどくさくて直していないバグ）</li>
-    </ul>
     <div id="editContainer">
         <div id="options">
-            <span class="option"><img src="./image/map-editor/back.png" alt="戻るダミー" id="backDummy"><img src="./image/map-editor/backActv.png" alt="戻る" id="back"><span class="z2">戻る</span></span>
-            <span class="option"><img src="./image/map-editor/forward.png" alt="進むダミー" id="forwardDummy"><img src="./image/map-editor/forwardActv.png" alt="進む" id="forward"><span class="z2">進む</span></span>
+            <!-- <span class="option"><img src="./image/map-editor/back.png" alt="戻るダミー" id="backDummy"><img src="./image/map-editor/backActv.png" alt="戻る" id="back"><span class="z2">戻る</span></span>
+            <span class="option"><img src="./image/map-editor/forward.png" alt="進むダミー" id="forwardDummy"><img src="./image/map-editor/forwardActv.png" alt="進む" id="forward"><span class="z2">進む</span></span> -->
             <span class="option"><img src="./image/map-editor/put.png" alt="プット" id="put" class="z1"><span class="z2">プット</span></span>
 		    <span class="option"><img src="./image/map-editor/delete.png" alt="デリート" id="delete" class="z1"><span class="z2">デリート</span></span>
 		    <span class="option"><img src="./image/map-editor/shiftLeft.png" alt="左シフト" id="shiftLeft" class="z1"><span class="z2">左シフト</span></span>
@@ -139,11 +134,103 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
                 <div id="currentMapChipContainer">
                     <p class="mapCategory">現在選択中のチップ<span id="currentMapChipSize"><?php echo $deleteMaptipBtn ?></p>
                     <div id="currentMapChipBG">
-                        <img src="" id="currentMapChip">
+                        <img src-"" id="currentMapChip">
                     </div>
                 </div>
-                <div id="MprojectContainer">
-                    <?php echo $allMapChips; ?>
+                <div id="projectContainer">
+                    
+
+                    <div id="characterIconContainer">
+                        <p class="mapCategory">
+                            <span class="unfoldButton">＋</span>
+                            <span class="foldButton">ー</span>キャラクター
+                        </p>
+                        <div class="acordion">
+                            <?php
+                            foreach ($mapChips['character'] AS $file) {
+                                echo '<img src="'.$file.'" alt="キャラクターマップチップ" class="mapchip">';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div id="mapIconContainer">
+                        <p class="mapCategory">
+                            <span class="unfoldButton">＋</span>
+                            <span class="foldButton">ー</span>地形
+                        </p>
+                        <div class="acordion">
+                            <?php
+                            foreach ($mapChips['map'] AS $file) {
+                                echo '<img src="'.$file.'" alt="地形マップチップ" class="mapchip">';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div id="mapPassIconContainer">
+                        <p class="mapCategory">
+                            <span class="unfoldButton">＋</span>
+                            <span class="foldButton">ー</span>地形通りぬけ
+                        </p>
+                        <div class="acordion">
+                            <?php
+                            foreach ($mapChips['mapPass'] AS $file) {
+                                echo '<img src="'.$file.'" alt="地形通りぬけマップチップ" class="mapchip">';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div id="toolIconContainer">
+                        <p class="mapCategory">
+                            <span class="unfoldButton">＋</span>
+                            <span class="foldButton">ー</span>ツール
+                        </p>
+                        <div class="acordion">
+                            <?php
+                            foreach ($mapChips['tool'] AS $file) {
+                                echo '<img src="'.$file.'" alt="ツールマップチップ" class="mapchip">';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div id="buildingIconContainer">
+                        <p class="mapCategory">
+                            <span class="unfoldButton">＋</span>
+                            <span class="foldButton">ー</span>建物
+                        </p>
+                        <div class="acordion">
+                            <?php
+                            foreach ($mapChips['building'] AS $file) {
+                                echo '<img src="'.$file.'" alt="建物マップチップ" class="mapchip">';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div id="mapRepeatIconContainer">
+                        <p class="mapCategory">
+                            <span class="unfoldButton">＋</span>
+                            <span class="foldButton">ー</span>地形繰り返し
+                        </p>
+                        <div class="acordion">
+                            <?php
+                            foreach ($mapChips['mapRepeat'] AS $file) {
+                                echo '<img src="'.$file.'" alt="地形繰り返し" class="mapchip">';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div id="mapTurnIconContainer">
+                        <p class="mapCategory">
+                            <span class="unfoldButton">＋</span>
+                            <span class="foldButton">ー</span>地形交互
+                        </p>
+                        <div class="acordion">
+                            <?php
+                            foreach ($mapChips['mapTurn'] AS $file) {
+                                echo '<img src="'.$file.'" alt="地形交互" class="mapchip">';
+                            }
+                            ?>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="preview-link-container">
