@@ -124,6 +124,7 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
             <span class="option"><img src="./image/map-editor/delColLeft.png" alt="一行左を減らす" id="delColLeft" class="z1"><span class="z2">一列左を減らす</span></span>
         </div>
         <div id="canvas-container">
+            <button onclick="switchCanvasSize()">キャンバス大きさ変更</button>
             <div id="mapStatusContainer">
                 <p id="mapStatus"></p>
                 <p id="selectedMapName"></p>

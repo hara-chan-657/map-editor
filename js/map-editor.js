@@ -472,6 +472,11 @@ function setCurrentMapChip(evt) {
 			//ドラッグフラグ変更
 			currentMapChipType = 7;
 			break;
+
+		case 'design':
+			//ドラッグフラグ変更
+			currentMapChipType = 8;
+			break;
 	}
 	//マップチップの縦横（マップチップ数）を取得する、画面にも表示する
 	currentMapChipRowNum = currentMapChip.naturalHeight/32;
@@ -1349,6 +1354,23 @@ function updateMapDataToSever() {
 		setProjectData('update', projectDataObj);
 		MapDataForm.submit();
 	}
+}
+
+var isNormal = true; //ノートPC
+function switchCanvasSize() {
+    if (isNormal) {
+        document.getElementById('mapContainer').style.width = 2000 + 'px';
+        document.getElementById('mapContainer').style.height = 1300 + 'px';
+        //document.getElementById('mapBG').style.width = 2000 + 'px';
+        //document.getElementById('mapBG').style.height = 1300 + 'px';
+        isNormal = false;
+    } else {
+        document.getElementById('mapContainer').style.width = 480 + 'px';
+        document.getElementById('mapContainer').style.height = 480 + 'px';
+        //document.getElementById('mapBG').style.width = 480 + 'px';
+        //document.getElementById('mapBG').style.height = 480 + 'px';
+        isNormal = true;
+    }
 }
 
 
