@@ -154,6 +154,7 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
             <div id="projectsContainer">
                 <?php echo $projectsData ?>
             </div>
+            <p>確認コマンド：console.log(currentMapChipType);</p>
         </div>
     </div>
     <div id="preview-container">

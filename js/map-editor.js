@@ -473,9 +473,14 @@ function setCurrentMapChip(evt) {
 			currentMapChipType = 7;
 			break;
 
-		case 'design':
+		case 'mapTurnPass':
 			//ドラッグフラグ変更
 			currentMapChipType = 8;
+			break;
+
+		case 'design':
+			//ドラッグフラグ変更
+			currentMapChipType = 9;
 			break;
 	}
 	//マップチップの縦横（マップチップ数）を取得する、画面にも表示する
@@ -937,36 +942,39 @@ function editMap(evt) {
 		//マップ属性を更新前に退避
 		var tmpEvacuateMapTipe = arrayMaptipType;
     	if (currentModeId == 'put') {
-			//マップチップ属性を更新
-			//マップチップの縦横分更新
-			for (i=0; i<currentMapChipRowNum; i++) {
-				for (j=0; j<currentMapChipColNum; j++) {
-					if (startMapFlg) {
-						if (startY+i == projectDataObj['startPosY'] && startX+j == projectDataObj['startPosX']) {
-							//確認ウィンドウを出す前にドラッグフラグをfalseに
-							setDraggingFlg(false);
-							var confirmTxt = 'スタートポジションを含む範囲を編集しようとしています。\n編集を行うとスタートポジションの解除およびスタートプロジェクトからも解除されます\n\nこの作業は取り消せません\nよろしいですか？';
-							var ret = confirm(confirmTxt);
-							if (ret) {
-								//OKなら削除処理
-								projectDataObj['startMap'] = 'null';
-								projectDataObj['startPosX'] = 'null';
-								projectDataObj['startPosY'] = 'null';
-								//フラグオフ
-								startMapFlg = false;							
-							} else {
-								//消さない場合はマップ属性を元に戻してリターン
-								arrayMaptipType = tmpEvacuateMapTipe;
-								return;
+    		//デザインチップ以外の場合は、プロジェクトデータ、マップデータをいじる必要あり
+    		if (currentMapChipType != 7 && currentMapChipType != 8 && currentMapChipType != 9) {
+				//マップチップ属性を更新
+				//マップチップの縦横分更新
+				for (i=0; i<currentMapChipRowNum; i++) {
+					for (j=0; j<currentMapChipColNum; j++) {
+						if (startMapFlg) {
+							if (startY+i == projectDataObj['startPosY'] && startX+j == projectDataObj['startPosX']) {
+								//確認ウィンドウを出す前にドラッグフラグをfalseに
+								setDraggingFlg(false);
+								var confirmTxt = 'スタートポジションを含む範囲を編集しようとしています。\n編集を行うとスタートポジションの解除およびスタートプロジェクトからも解除されます\n\nこの作業は取り消せません\nよろしいですか？';
+								var ret = confirm(confirmTxt);
+								if (ret) {
+									//OKなら削除処理
+									projectDataObj['startMap'] = 'null';
+									projectDataObj['startPosX'] = 'null';
+									projectDataObj['startPosY'] = 'null';
+									//フラグオフ
+									startMapFlg = false;							
+								} else {
+									//消さない場合はマップ属性を元に戻してリターン
+									arrayMaptipType = tmpEvacuateMapTipe;
+									return;
+								}
 							}
 						}
+						//マップ更新時、イベント等の情報をリセットするために配列を初期化
+						arrayMaptipType[startY+i][startX+j] = [];
+						//初期化後マップ属性を配置
+						arrayMaptipType[startY+i][startX+j] = currentMapChipType;
 					}
-					//マップ更新時、イベント等の情報をリセットするために配列を初期化
-					arrayMaptipType[startY+i][startX+j] = [];
-					//初期化後マップ属性を配置
-					arrayMaptipType[startY+i][startX+j] = currentMapChipType;
 				}
-			}
+    		}
         	//現在チップをマップに表示
 			mapContext.drawImage(currentMapChip, mapLength*startX, mapLength*startY);
     	} else if (currentModeId == 'delete') {
