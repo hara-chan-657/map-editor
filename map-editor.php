@@ -47,17 +47,6 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
         } else {
             echo $ret;
         }
-    // } else if (isset($_POST['newProjectName'])) {
-    //     //新規プロジェクトに保存の場合
-    //     $newProjectName = $_POST['newProjectName'];
-    //     $mapName = $_POST['mapName'];
-    //     $projectData = $_POST['project_data'];
-    //     $ret = $obj->addMapDataToNewProject($newProjectName, $mapImageData, $mapObjData, $mapName, $projectData);
-    //     if ($ret) {
-    //         echo '保存しました！';
-    //     } else {
-    //         echo $ret;
-    //     }
     } else {
         //マップ更新の場合
         $updateMapProject = $_POST['updateMapProject'];

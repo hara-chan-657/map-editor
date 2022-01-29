@@ -662,62 +662,6 @@ function hideDetail(evt) {
 	}
 }
 
-// //マップを一動作前の状態に戻す
-// function doBack() {
-// 	//戻るよう配列の最後（最新）のデータを、進む用配列に退避
-// 	var lastData = backArray[backArray.length-1];
-// 	backArray.pop();
-// 	forwardArray.push(lastData);
-// 	//マップをクリア
-// 	mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
-// 	//一個前（だった）の戻る用配列のcanvasを表示
-// 	if (backArray.length > 0) {
-// 		var preCanvas = backArray[backArray.length-1];
-// 		mapContext.putImageData(preCanvas,0,0);
-// 	} else {
-// 		//もう戻れない場合は何もせず、戻るを非活性に
-// 		back.style.display = "none";
-// 		backDummy.style.display = "inline";
-// 	}
-// 	if (forwardArray.length > 0) {
-// 		forwardDummy.style.display = "none";
-// 		forward.style.display = "inline";
-// 	}
-// }
-
-// //マップの状態を戻したものを一個進める
-// function doForward() {
-// 	//進めるよう配列から、戻るよう配列に戻す
-// 	var lastData = forwardArray[forwardArray.length-1];
-// 	forwardArray.pop();
-// 	backArray.push(lastData);
-// 	back.style.display = "inline";
-// 	backDummy.style.display = "none";
-// 	//マップをクリア
-// 	mapContext.clearRect(0,0,mapColNum*mapLength,mapRowNum*mapLength);
-// 	//最新の戻る用配列のcanvasを表示
-// 	var newCanvas = backArray[backArray.length-1];
-// 	mapContext.putImageData(newCanvas,0,0);
-// 	//進む配列がなくなった段階で進むを非活性に
-// 	if (forwardArray.length == 0) {
-// 		forwardDummy.style.display = "inline";
-// 		forward.style.display = "none";
-// 	}
-// }
-
-// //戻る進むを更新する
-// function updataBackForward() {
-// 		//進む配列初期化
-// 		forwardArray = [];
-// 		forward.style.display = "none";
-// 		forwardDummy.style.display = "inline";
-// 		//戻る用配列更新
-// 		backArray.push(mapContext.getImageData(0,0,mapColNum*mapLength,mapRowNum*mapLength));
-// 		//戻るを活性化
-// 		backDummy.style.display = "none";
-// 		back.style.display = "inline";
-// }
-
 //スタートマップの位置を編集する
 function editStartMapPos(mode, side) {
 	if (mode == 'shift') {

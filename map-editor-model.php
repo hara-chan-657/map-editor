@@ -21,33 +21,6 @@ class mapEditor {
     /**
      * マップチップを取得する
      */
-    // function getMapChips(){
-    //     //マップチップディレクトリのディレクトリ（カテゴリ）を取得する
-    //     $dirs = scandir($this->mapChipDirPath);
-    //     //表示させないディレクトリ配列
-    //     $excludes = array(
-    //         '.',
-    //         '..',
-    //         '.DS_Store'
-    //     );
-    //     foreach ($dirs AS $dir) {
-    //         //特定のディレクトリの場合は表示させない
-    //         if (in_array($dir, $excludes)) {
-    //             continue;
-    //         }
-    //         //ディレクトリの中のマップチップを取得する
-    //         foreach(glob($this->mapChipDirPath . $dir . '/*') AS $file){
-    //             if(is_file($file)){
-    //                 $mapChips[$dir][] = $file;
-    //             }
-    //         }
-    //     }
-    //     return $mapChips;
-    // }
-
-    /**
-     * マップチップを取得する
-     */
     function getMapChips(){
         //表示させないディレクトリ配列
         $excludes = array(
@@ -127,10 +100,8 @@ class mapEditor {
                 continue;
             }
             $html .= '<div class="Cprojects" style="color:red">';
-            //$html .= '<p>';
             $html .= '<span class="unfoldButton">＋</span>';
             $html .= '<span class="foldButton">ー</span>' . $prjKey;
-            //$html .= '</p>';
             $html .= '</div>';
             $html .= '<div class="acordion">';
             foreach ($project AS $mapTypeKey => $mapType) {
@@ -139,24 +110,19 @@ class mapEditor {
                     continue;
                 }
                 $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
-                //$html .= '<p>';
                 $html .= '<span class="unfoldButton">＋</span>';
                 $html .= '<span class="foldButton">ー</span>' . $mapTypeKey;
-                //$html .= '</p>';
                 $html .= '</div>';
                 $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
                 foreach ($mapType AS $mapkey => $map) {
                     if (is_array($map)) {
                         if (substr($map[0], -9) == '空です') {
                             $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $map[0] . '</div>';
-                            // $html .= '</div>';
                             continue;
                         }
                         $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
-                        //$html .= '<p class="projects">';
                         $html .= '<span class="unfoldButton">＋</span>';
                         $html .= '<span class="foldButton">ー</span>' . $mapkey;
-                        //$html .= '</p>';
                         $html .= '</div>';
                         $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                         foreach ($map AS $file) {
