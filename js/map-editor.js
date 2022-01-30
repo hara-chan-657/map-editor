@@ -184,6 +184,7 @@ for (var i=0; i<mapchips.length; i++) {
 }
 mapCanvas.addEventListener('mousedown', editMap, false);
 mapCanvas.addEventListener('mousemove', function (evt) {if (draggingFlg == true) editMap(evt);}, false);
+mapCanvas.addEventListener('mousemove', function (evt) {showCursorPos(evt);}, false);
 mapCanvas.addEventListener('mouseup', function () {if (draggingFlg == true) setDraggingFlg(false);}, false);
 for (var i=0; i<unfoldButtons.length; i++) {
 	unfoldButtons[i].addEventListener('click', function(evt) {changeCategoryDisplay(evt, 'unfold');}, false);
@@ -860,6 +861,21 @@ function setDraggingFlg (bool) {
 		//canvas変更フラグも元に戻す
 		canvasChangeFlg = false;
 	}
+}
+
+//カーソル位置を表示
+var cursorPos = document.getElementById("cursorPos");
+function showCursorPos(evt) {
+	//クリックした座標を取得する
+	var mousePos = getMousePosition(mapCanvas, evt);
+	var x = mousePos.x;
+    var y = mousePos.y;
+
+	var tmpPositionX = Math.floor(x/mapLength);
+	var tmpPositionY = Math.floor(y/mapLength);
+
+	cursorPos.innerText = tmpPositionX + "：" + tmpPositionY;
+
 }
 
 //マップを編集する

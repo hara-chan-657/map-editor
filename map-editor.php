@@ -114,6 +114,7 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
         </div>
         <div id="canvas-container">
             <button onclick="switchCanvasSize()">キャンバス大きさ変更</button>
+            <p>カーソル位置（<span id="cursorPos"></span>）</p>
             <div id="mapStatusContainer">
                 <p id="mapStatus"></p>
                 <p id="selectedMapName"></p>
