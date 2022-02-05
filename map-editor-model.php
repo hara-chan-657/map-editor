@@ -172,6 +172,35 @@ class mapEditor {
     }
 
     /**
+     * 既存のプロジェクトを取得する
+     * return プロジェクトのセレクトボックス
+     */
+    function getProjects2() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        $projects = '<select id="oldProjectName2" name="oldProjectName2" onChange="showProjectMapNames(this)"">';
+        $projects .= '<option value="">プロジェクトを選択</option>';
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            //最初の要素を選択状態に
+            if ($dir === reset($dirs)) {
+                $projects .= '<option value="' . $dir . '">' . $dir . '</option>';
+            }
+            $projects .= '<option value="' . $dir . '">' . $dir . '</option>';
+        }
+        $projects .= '</select>';
+        return $projects;
+    }
+
+    /**
      * 既存のプロジェクトのデータ（画像
      * return プロジェクトのセレクトボックス
      */
@@ -329,9 +358,10 @@ class mapEditor {
     }
 
     function getSaveMapContainer() {
-        $html = '<div id="save-map-container"><form name="map_data" action="" method="post">';
+        $html = '<div id="save-map-container">';
+        $html = '<form name="map_data" action="" method="post">';
         $html .= '<br><input type="radio" id="old" name="projectType" value="old" checked>既存のプロジェクトに追加<br>';
-        $html .= $this->getProjects();
+        $html .= $this->getProjects2();
         //$html .= '<br><br><input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>';
         //$html .= '<input type="text" id="newProjectName" name="newProjectName"><br>';
         $html .= '<br><p>マップ名を入力</p>';
@@ -340,7 +370,9 @@ class mapEditor {
         $html .= '<input type="hidden" name="map_image_data" value="" />';
         $html .= '<input type="hidden" name="map_obj_data" value="" />';
         $html .= '<input type="hidden" name="project_data" value="" />';
-        $html .= '</form></div>';
+        $html .= '</form>';
+        $html .= '<div id="currentProjectDataContainer2"></div>';
+        $html .= '</div>';
         return $html;
     }
 

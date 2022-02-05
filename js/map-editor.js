@@ -1038,6 +1038,18 @@ function downloadCanvas(evt) {
 	a.download = new Date().getTime() + '.png'; //ダウンロードファイル名はタイムスタンプに設定
 }
 
+//既存プロジェクトのマップ名を一覧表示する（確認画面）
+var currentProjectDataContainer2 = document.getElementById("currentProjectDataContainer2");
+function showProjectMapNames(evt) {
+	// prjNameの既存マップを一覧で取得して、ソースに表示する
+	//切り替えたプロジェクトのvalueを取得
+	var index = evt.selectedIndex;
+	if (index == 0) return; //「プロジェクトを選択の時は何もしない」
+	var value = evt.options[index].value; // 値
+	//プロジェクトのdivを表示
+	currentProjectDataContainer2.innerHTML = document.getElementById(value).innerHTML;
+}
+
 //マップチップ属性配列をセットする
 function setArrayMaptipType (mode, direction, side) {
 	if (mode == 'load') {
