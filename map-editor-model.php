@@ -359,7 +359,7 @@ class mapEditor {
 
     function getSaveMapContainer() {
         $html = '<div id="save-map-container">';
-        $html = '<form name="map_data" action="" method="post">';
+        $html .= '<form name="map_data" action="" method="post">';
         $html .= '<br><input type="radio" id="old" name="projectType" value="old" checked>既存のプロジェクトに追加<br>';
         $html .= $this->getProjects2();
         //$html .= '<br><br><input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>';
@@ -378,6 +378,7 @@ class mapEditor {
 
     function getMapUpdateContainer() {
         $html = '<div id="map-update-container"><form name="update_map_data" action="" method="post">';
+        $html .= '<p style="color:red">※ 既存のマップです。更新をします。</p>';
         $html .= '<input type="text" id="updateMapProject" name="updateMapProject" value="" readonly="readonly"><br>';
         $html .= '<input type="text" id="updateMapName" name="updateMapName" value="" readonly="readonly"><br>';
         $html .= '<span id="update-map-data">マップを更新</span>';

@@ -268,7 +268,7 @@ function doBack() {
 		for (var i=0; i<mapRowNum; i++) {
 			arrayMaptipType[i] = [];
 			for (var j=0; j<mapColNum; j++) {
-				arrayMaptipType[i][j] = 0;
+				arrayMaptipType[i][j]['maptipType'] = 0;
 			}
 		}
 		//戻るを非活性に
@@ -327,7 +327,7 @@ function clearSelectedMap() {
 			//マップチップ属性配列初期化
 			for (var i=0; i<arrayMaptipType.length; i++) {
 				for (var j=0; j<arrayMaptipType[i].length; j++) {
-					arrayMaptipType[i][j] = 0;
+					arrayMaptipType[i][j]['maptipType'] = 0;
 				}
 			}
 			//スタートマップフラグをfalseに
@@ -370,7 +370,8 @@ function setEditMap(evt) {
 		arrayMaptipType[i] = [];
 		maptipTypeObj[i] = Object.keys(maptipTypeObj[i]).map(function (key) {return maptipTypeObj[i][key]});
 		for (var j=0; j<maptipTypeObj[i].length; j++) {
-			arrayMaptipType[i][j] = maptipTypeObj[i][j]['maptipType'];
+			//arrayMaptipType[i][j] = maptipTypeObj[i][j]['maptipType'];
+			arrayMaptipType[i][j] = maptipTypeObj[i][j];//マップチップタイプだけでなく、設定済みの全データに変更
 		}	
 	}
 	console.log(arrayMaptipType);//開発用
@@ -929,9 +930,10 @@ function editMap(evt) {
 							}
 						}
 						//マップ更新時、イベント等の情報をリセットするために配列を初期化
-						arrayMaptipType[startY+i][startX+j] = [];
+						//arrayMaptipType[startY+i][startX+j] = [];
+						arrayMaptipType[startY+i][startX+j] = new Object();
 						//初期化後マップ属性を配置
-						arrayMaptipType[startY+i][startX+j] = currentMapChipType;
+						arrayMaptipType[startY+i][startX+j]['maptipType'] = currentMapChipType;
 					}
 				}
     		}
@@ -961,9 +963,9 @@ function editMap(evt) {
 			//マップチップ消去
 			mapContext.clearRect(mapLength*startX, mapLength*startY, mapLength, mapLength);
 			//マップ更新時、イベント等の情報をリセットするために配列を初期化
-			arrayMaptipType[startY][startX] = [];
+			arrayMaptipType[startY][startX] = new Object();
 			//マップチップ属性を更新（削除）
-			arrayMaptipType[startY][startX] = 0;
+			arrayMaptipType[startY][startX]['maptipType'] = 0;
     	} else if (currentModeId == '') {
 
 		}
@@ -1057,7 +1059,8 @@ function setArrayMaptipType (mode, direction, side) {
 		for (var i=0; i<mapRowNum; i++) {
 			arrayMaptipType[i] = [];
 			for (var j=0; j<mapColNum; j++) {
-				arrayMaptipType[i][j] = 0;
+				arrayMaptipType[i][j] = new Object();
+				arrayMaptipType[i][j]['maptipType'] = 0;
 			}
 		}
 	} else if (mode == 'add') {
@@ -1065,12 +1068,12 @@ function setArrayMaptipType (mode, direction, side) {
 			if (side == 'top') {
 				arrayMaptipType.unshift(new Array());
 				for (var i=0; i<mapColNum; i++) {
-					arrayMaptipType[0][i] = 0;
+					arrayMaptipType[0][i]['maptipType'] = 0;
 				}
 			} else if (side == 'bottom') {
 				arrayMaptipType.push(new Array());
 				for (var i=0; i<mapColNum; i++) {
-					arrayMaptipType[mapRowNum-1][i] = 0;
+					arrayMaptipType[mapRowNum-1][i]['maptipType'] = 0;
 				}
 			} else {
 				//何もしない
@@ -1079,12 +1082,12 @@ function setArrayMaptipType (mode, direction, side) {
 			if (side == 'left') {
 				for (var i=0; i<mapRowNum; i++) {
 					arrayMaptipType[i].unshift(new Array());
-					arrayMaptipType[i][0] = 0;
+					arrayMaptipType[i][0]['maptipType'] = 0;
 				}
 			} else if (side == 'right') {
 				for (var i=0; i<mapRowNum; i++) {
 					arrayMaptipType[i].push(new Array());
-					arrayMaptipType[i][mapColNum-1] = 0;
+					arrayMaptipType[i][mapColNum-1]['maptipType'] = 0;
 				}
 			} else {
 				//何もしない
@@ -1194,8 +1197,9 @@ function savaMaptipTypeAsJson(mode) {
 		for (var i=0; i<mapRowNum; i++) {
 			obj[i] = new Object();
 			for (var j=0; j<mapColNum; j++) {
-				obj[i][j] = Object();
-				obj[i][j]['maptipType'] = arrayMaptipType[i][j];
+				obj[i][j] = new Object();
+				//obj[i][j]['maptipType'] = arrayMaptipType[i][j];
+				obj[i][j] = arrayMaptipType[i][j];
 			}
 		}
 		var objTxt = JSON.stringify(obj);
@@ -1251,14 +1255,14 @@ function saveMapDataToSever() {
 	var MapDataForm = document.forms['map_data'];
 	if (MapDataForm.old.checked) {
 		//既存プロジェクトの場合
-		if (MapDataForm.oldProjectName.children.length == 0){
+		if (MapDataForm.oldProjectName2.children.length == 0){
 			alert('既存プロジェクトがありません');
 			error = true;	
-		} else if (MapDataForm.oldProjectName.disabled) {
-			MapDataForm.oldProjectName.disabled = false;
+		} else if (MapDataForm.oldProjectName2.disabled) {
+			MapDataForm.oldProjectName2.disabled = false;
 		} else {
 			//MapDataForm.newProjectName.disabled = true;	
-			oldProjectName = MapDataForm.oldProjectName.value;
+			oldProjectName = MapDataForm.oldProjectName2.value;
 			oldFlg = true;
 		}
 	} else if (MapDataForm.new.checked) {
@@ -1271,7 +1275,7 @@ function saveMapDataToSever() {
 			alert('新規プロジェクト名を入力してください。');
 			error = true;
 		} else {
-			MapDataForm.oldProjectName.disabled = true;
+			MapDataForm.oldProjectName2.disabled = true;
 			newFlg = true;
 		}
 	} else {
@@ -1296,8 +1300,8 @@ function saveMapDataToSever() {
 			//setProjectData('save', newProjectName);
 			MapDataForm.submit();
 		} else {
-			MapDataForm.oldProjectName.disabled = false;
-			MapDataForm.newProjectName.disabled = false;
+			MapDataForm.oldProjectName2.disabled = false;
+			MapDataForm.newProjectName2.disabled = false;
 		}
 	}
 }
@@ -1317,7 +1321,7 @@ function updateMapDataToSever() {
 			sPosFlg = false; //スタートポシションの考慮を不要に
 		}
 
-		if (sPosFlg == true && arrayMaptipType[sPosY][sPosX] != 3) {
+		if (sPosFlg == true && arrayMaptipType[sPosY][sPosX]['maptipType'] != 3) {
 			alert('スタートマップに設定されているマップです。\nスタートポジションに設定できるのは、「地形通りぬけ」のマップチップのみです!\n編集してください\n\nスタートポジション = [' + sPosX + ',' + sPosY +']');
 			return;
 		}

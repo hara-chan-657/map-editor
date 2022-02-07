@@ -54,7 +54,7 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
         $projectData = $_POST['project_data'];
         $ret = $obj->updateMapData($updateMapProject, $mapImageData, $mapObjData, $mapName, $projectData);
         if ($ret) {
-            echo '保存しました！';
+            echo '更新しました！※rpg-editorからrpg-playerへデータの更新もしてください！';
         } else {
             echo $ret;
         }
@@ -142,9 +142,14 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
 		        <button id="preview-link">プレビュー&ダウンロード</button>
             </div>
             <div id="projectsContainer">
+                <p>■ 既存マップ更新用コンテナ</p>
+                <p style="color: red">
+                    ※ 更新の際、設定済みのマップチップ情報は受け継がれます。<br>
+                    ただし、上書きしたチップに関しては、初期化されます。ご注意ください。
+                </p>
                 <?php echo $projectsData ?>
             </div>
-            <p>確認コマンド：console.log(currentMapChipType);</p>
+            <p>確認コマンド：console.log(arrayMaptipType);</p>
         </div>
     </div>
     <div id="preview-container">
