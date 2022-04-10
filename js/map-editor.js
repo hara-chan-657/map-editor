@@ -1357,4 +1357,3 @@ function switchCanvasSize() {
     }
 }
 
-

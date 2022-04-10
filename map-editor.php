@@ -36,9 +36,9 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
     $mapImageData = $_POST['map_image_data'];
     $mapObjData = $_POST['map_obj_data'];
 
-    if (isset($_POST['oldProjectName'])) {
+    if (isset($_POST['oldProjectName2'])) {
         //既存プロジェクトに保存の場合
-        $oldProjectName = $_POST['oldProjectName'];
+        $oldProjectName = $_POST['oldProjectName2'];
         $mapName = $_POST['mapName'];
         $projectData = $_POST['project_data'];
         $ret = $obj->addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData, $mapName, $projectData);
@@ -58,6 +58,15 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
         } else {
             echo $ret;
         }
+    }
+}
+
+if (isset($_POST['deleteMap'])) {
+    $projectName = $_POST['projectName'];
+    $pngBaseName = $_POST['pngBaseName'];
+    $retArray = $obj->deleteMap($projectName, $pngBaseName);
+    foreach ($retArray as $key => $value) {
+        echo $value ."<br>";
     }
 }
 

@@ -8,6 +8,7 @@ class mapEditor {
     private $mapChips; //マップチップ配列
     private $mapChipDirPath; //マップチップディレクトリパス
     private $projectDirPath; //プロジェクトディレクトリパス
+    private $projectDirPathPlayer; //プロジェクトディレクトリパス
 
     /**
      * マップエディタコンストラクタ
@@ -16,6 +17,7 @@ class mapEditor {
         $this->mapChips = array();
         $this->mapChipDirPath = './image/map-editor/map-chip/';
         $this->projectDirPath = '../rpg-editor/public/projects/';
+        $this->projectDirPathPlayer = '../rpg-player/public/projects/';
     }
 
     /**
@@ -143,7 +145,7 @@ class mapEditor {
     }
 
     /**
-     * 既存のプロジェクトを取得する
+     * 既存のプロジェクトを取得する（編集画面）
      * return プロジェクトのセレクトボックス
      */
     function getProjects() {
@@ -172,7 +174,7 @@ class mapEditor {
     }
 
     /**
-     * 既存のプロジェクトを取得する
+     * 既存のプロジェクトを取得する（登録画面）
      * return プロジェクトのセレクトボックス
      */
     function getProjects2() {
@@ -226,8 +228,14 @@ class mapEditor {
                 if(is_file($pngFile)){
                     $pngBaseName = basename($pngFile, '.png');
                     $project .= '<div  id="'. $pngBaseName. '" class="eachMapContainer">';
+                    $project .= '<form name="deleteMap action="" method="post">';
                     $project .= '<p class="mapNames">'. $pngBaseName. '</p>';
-                    $project .= '<img src="' . $pngFile .'" class="maps" width="200" height="150" alt="'. $pngBaseName .'">'; 
+                    $project .= '<img src="' . $pngFile .'" class="maps" width="200" height="150" alt="'. $pngBaseName .'">';
+                    $project .= '<br><input type="submit" value="※削除" style="background-color:red"></input>';
+                    $project .= '<input type="hidden" name="deleteMap" value="true"></input>';
+                    $project .= '<input type="hidden" name="projectName" value="' . $dir .'"></input>';
+                    $project .= '<input type="hidden" name="pngBaseName" value="' . $pngBaseName .'"></input>';
+                    $project .= '</form>';
                     $project .= '</div>';
                     $i++;
                 }
@@ -362,8 +370,9 @@ class mapEditor {
         $html .= '<form name="map_data" action="" method="post">';
         $html .= '<br><input type="radio" id="old" name="projectType" value="old" checked>既存のプロジェクトに追加<br>';
         $html .= $this->getProjects2();
-        //$html .= '<br><br><input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>';
-        //$html .= '<input type="text" id="newProjectName" name="newProjectName"><br>';
+        //新規プロジェクトの追加はマップエディターではなくドットエディターで行う。なので既存のプロジェクトに追加のみ。
+        // $html .= '<br><br><input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>';
+        // $html .= '<input type="text" id="newProjectName" name="newProjectName"><br>';
         $html .= '<br><p>マップ名を入力</p>';
         $html .= '<input type="text" id="mapName" name="mapName"><br>';        
         $html .= '<span id="save-map-data">この内容でサーバに保存</span>';
@@ -371,7 +380,8 @@ class mapEditor {
         $html .= '<input type="hidden" name="map_obj_data" value="" />';
         $html .= '<input type="hidden" name="project_data" value="" />';
         $html .= '</form>';
-        $html .= '<div id="currentProjectDataContainer2"></div>';
+        $html .= '</div>';
+        $html .= '<div id="currentProjectDataContainer2">';
         $html .= '</div>';
         return $html;
     }
@@ -405,6 +415,23 @@ class mapEditor {
             chmod($mapchipPath, 0644);
             return $mapchipPath.'の削除に失敗しました。';
           }
+    }
+
+    function deleteMap($projectName, $pngBaseName) {
+        //rpg-editorとplayerから、マップのpngとjsonを削除する
+        $edtPng = unlink($this->projectDirPath . $dir . $projectName . '/' . $pngBaseName . '.png');
+        $edtJsn = unlink($this->projectDirPath . $dir . $projectName . '/' . $pngBaseName . '.json');
+        $plyPng = unlink($this->projectDirPathPlayer . $dir . $projectName . '/' . $pngBaseName . '.png');
+        $plyJsn = unlink($this->projectDirPathPlayer . $dir . $projectName . '/' . $pngBaseName . '.json');
+
+        $retArray = array();
+        $retArray[0] = $edtPng ? $this->projectDirPath . $dir . $projectName . '/' . $pngBaseName . '.png の削除に成功しました。' : '※※※' . $this->projectDirPath . $dir . $projectName . '/' . $pngBaseName . '.png の削除に失敗しました。';
+        $retArray[1] = $edtJsn ? $this->projectDirPath . $dir . $projectName . '/' . $pngBaseName . '.json の削除に成功しました。' : '※※※' . $this->projectDirPath . $dir . $projectName . '/' . $pngBaseName . '.json の削除に失敗しました。';
+        $retArray[2] = $plyPng ? $this->projectDirPathPlayer . $dir . $projectName . '/' . $pngBaseName . '.png の削除に成功しました。' : '※※※' . $this->projectDirPathPlayer . $dir . $projectName . '/' . $pngBaseName . '.png の削除に失敗しました。';
+        $retArray[3] = $plyJsn ? $this->projectDirPathPlayer . $dir . $projectName . '/' . $pngBaseName . '.json の削除に成功しました。' : '※※※' . $this->projectDirPathPlayer . $dir . $projectName . '/' . $pngBaseName . '.json の削除に失敗しました。';
+
+        return $retArray;
+
     }
 }
 
