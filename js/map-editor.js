@@ -465,7 +465,7 @@ function setCurrentMapChip(evt) {
 			currentMapChipType = 5;
 			break;
 
-		case 'mapRepeat':
+		case 'mapRepeat_left':
 			//ドラッグフラグ変更
 			currentMapChipType = 6;
 			break;
@@ -483,6 +483,18 @@ function setCurrentMapChip(evt) {
 		case 'design':
 			//ドラッグフラグ変更
 			currentMapChipType = 9;
+			break;
+		case 'mapRepeat_right':
+			//ドラッグフラグ変更
+			currentMapChipType = 10;
+			break;
+		case 'mapRepeat_up':
+			//ドラッグフラグ変更
+			currentMapChipType = 11;
+			break;
+		case 'mapRepeat_down':
+			//ドラッグフラグ変更
+			currentMapChipType = 12;
 			break;
 	}
 	//マップチップの縦横（マップチップ数）を取得する、画面にも表示する

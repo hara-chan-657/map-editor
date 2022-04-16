@@ -129,7 +129,29 @@ class mapEditor {
                         $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                         foreach ($map AS $file) {
                             //今のところここが最下層
-                            $html .= '<img src="'. $this->mapChipDirPath . $prjKey . '/' . $mapTypeKey . '/' . $mapkey . '/' .$file.'" alt="' . $mapTypeKey . '" class="mapchip">';
+                            if ($mapTypeKey == 'mapRepeat') {
+                            //mpaRepeatの場合方向が分かるようにする（方向でマップチップタイプが変わってくるので）
+                                switch ($mapkey) {
+                                    case 'left': //6
+                                        $html .= '<img src="'. $this->mapChipDirPath . $prjKey . '/' . $mapTypeKey . '/' . $mapkey . '/' .$file.'" alt="' . $mapTypeKey .'_left" class="mapchip">';
+                                    break;
+                                    case 'right': //10
+                                        $html .= '<img src="'. $this->mapChipDirPath . $prjKey . '/' . $mapTypeKey . '/' . $mapkey . '/' .$file.'" alt="' . $mapTypeKey.'_right" class="mapchip">';
+                                    break;
+                                    case 'up': //11
+                                        $html .= '<img src="'. $this->mapChipDirPath . $prjKey . '/' . $mapTypeKey . '/' . $mapkey . '/' .$file.'" alt="' . $mapTypeKey.'_up" class="mapchip">';
+                                    break;
+                                    case 'down': //12
+                                        $html .= '<img src="'. $this->mapChipDirPath . $prjKey . '/' . $mapTypeKey . '/' . $mapkey . '/' .$file.'" alt="' . $mapTypeKey.'_down" class="mapchip">';
+                                    break;
+                                    default:
+                                        # code...
+                                    break;
+                                }
+                            } else {
+                            //それ以外の場合
+                                $html .= '<img src="'. $this->mapChipDirPath . $prjKey . '/' . $mapTypeKey . '/' . $mapkey . '/' .$file.'" alt="' . $mapTypeKey . '" class="mapchip">';
+                            }
                         }
                         $html .= '</div>';
                     } else {
