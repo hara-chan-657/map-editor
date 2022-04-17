@@ -24,11 +24,21 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 if (isset($_POST['mapchipPath'])) {
     $mapchipPath = $_POST['mapchipPath'];
     $ret = $obj->deleteMapchip($mapchipPath);
-    if ($ret) {
-        echo '削除しました！';
+
+    if ($ret['file']) {
+        echo $_POST['mapchipPath'] . ' を削除しました！';
     } else {
-        echo $ret;
+        echo $_POST['mapchipPath'] . ' を削除できませんでした。';
     }
+    
+    if (isset($ret['dir'])) {
+        if ($ret['dir']) {
+            echo '<br>最後のファイルなのでディレクトリも削除しました！';
+        } else {
+            echo '<br>最後のファイルでしたがディレクトリを削除できませんでした';
+        }
+    }
+
 }
 
 if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {

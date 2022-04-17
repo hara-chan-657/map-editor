@@ -6,6 +6,7 @@ require("admin.php");
 class mapEditor {
 
     private $mapChips; //マップチップ配列
+    private $maptipTypes; //マップチップ種類
     private $mapChipDirPath; //マップチップディレクトリパス
     private $projectDirPath; //プロジェクトディレクトリパス
     private $projectDirPathPlayer; //プロジェクトディレクトリパス
@@ -15,6 +16,18 @@ class mapEditor {
      */
     function __construct() {
         $this->mapChips = array();
+        $this->MaptipTypes = array(
+            '選択してください',
+            'character',
+            'map',
+            'mapPass',
+            'tool',
+            'building',
+            'mapRepeat',
+            'mapTurn',
+            'mapTurnPass',
+            'design'
+        );
         $this->mapChipDirPath = './image/map-editor/map-chip/';
         $this->projectDirPath = '../rpg-editor/public/projects/';
         $this->projectDirPathPlayer = '../rpg-player/public/projects/';
@@ -430,13 +443,21 @@ class mapEditor {
 
     function deleteMapchip($mapchipPath) {
         $mapchipPath = preg_replace('/http.*?\/map-editor\//', '', $mapchipPath); //preg_replaceの使い方（//で囲むに注意）
-        var_dump($mapchipPath);
-        if (unlink($mapchipPath)){
-            return true;
-          }else{
-            chmod($mapchipPath, 0644);
-            return $mapchipPath.'の削除に失敗しました。';
-          }
+        $ret = array();
+        // ファイル削除
+        $delBase = basename(dirname($mapchipPath));
+        $ret['file'] = unlink($mapchipPath);
+        //ディレクトリ削除
+        $delPathDir = dirname($mapchipPath);
+        $dirs = scandir($this->projectDirPath);
+        if (!in_array($delBase, $dirs) && !in_array($delBase, $this->MaptipTypes)) { //プロジェクトとマップチップタイプのディレクトリの場合消さない
+            $files = array_diff(scandir($delPathDir), array('.','..'));
+            if (empty($files)) {
+                $ret['dir'] = rmdir($delPathDir);
+            }
+        }
+        return $ret;
+
     }
 
     function deleteMap($projectName, $pngBaseName) {
