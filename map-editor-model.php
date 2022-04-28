@@ -30,7 +30,7 @@ class mapEditor {
         );
         $this->mapChipDirPath = './image/map-editor/map-chip/';
         $this->projectDirPath = '../rpg-editor/public/projects/';
-        $this->projectDirPathPlayer = '../rpg-player/public/projects/';
+        $this->projectDirPathPlayer = '../rpg-player/public/projects/'; //このパスを保存に反映させる！！！！！
     }
 
     /**
@@ -333,14 +333,19 @@ class mapEditor {
                 $fp = fopen($oldProjectPath . "/" . $mapName . ".png", "wb");
                 fwrite($fp, $decodedImageData);
                 fclose($fp);
+
                 //マップオブジェクトデータを保存
                 $fp = fopen($oldProjectPath . "/" . $mapName . ".json", "wb");
                 fwrite($fp, $mapObjData);
                 fclose($fp);
+
                 //プロジェクトデータファイルを保存
                 //最初だけ作る
                 if (!file_exists($oldProjectPath . "/projectData.json")) {
                     $fp = fopen($oldProjectPath . "/projectData.json", "wb");
+                    fwrite($fp, $projectData);
+                    fclose($fp);
+                    $fp = fopen($oldProjectPathPlyr . "/projectData.json", "wb");
                     fwrite($fp, $projectData);
                     fclose($fp);
                 }
@@ -348,11 +353,11 @@ class mapEditor {
                 return true;
 
             } else {
-                return '同名のファイルが存在します'; 
+                return 'editorに同名のファイルが存在します'; 
             }
 
         } else {
-            return 'プロジェクトがありません。'; 
+            return 'editorにプロジェクトがありません。'; 
         }
         return false;
     }
@@ -364,24 +369,50 @@ class mapEditor {
      * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
      * return bool
      */
-    function updateMapData($oldProjectName, $mapImageData, $mapObjData, $mapName, $projectData) {
+    function updateMapData($oldProjectName, $mapImageData, $mapObjData, $mapName, $projectData, $allMapData) {
         //既存プロジェクトのパスを保存
         $oldProjectPath = $this->projectDirPath . $oldProjectName;
+        $oldProjectPathPlyr = $this->projectDirPathPlayer . $oldProjectName;
         //既存プロジェクトがあるか調べる
         if(file_exists($oldProjectPath)) {
             if(file_exists($oldProjectPath.'/'.$mapName.'.png')) {
+
+                //allMapDataから全マップのデータを更新
+                //一回全部デコードして、マップ単位でエンコードしなおす
+                $allMapDataDecoded = json_decode($allMapData,true);
+                foreach($allMapDataDecoded AS $otherMapName => $otherEach){ 
+                    $otherEachDecoded = json_encode($otherEach, JSON_UNESCAPED_UNICODE);
+                    $fp = fopen($oldProjectPath . "/" . $otherMapName . ".json", "wb");
+                    fwrite($fp, $otherEachDecoded);
+                    fclose($fp);
+                    $fp = fopen($oldProjectPathPlyr . "/" . $otherMapName . ".json", "wb");
+                    fwrite($fp, $otherEachDecoded);
+                    fclose($fp);
+                }
+
                 //マップデータデコード
                 $decodedImageData = base64_decode($mapImageData);
                 //マップ画像を保存
                 $fp = fopen($oldProjectPath . "/" . $mapName . ".png", "wb");
                 fwrite($fp, $decodedImageData);
                 fclose($fp);
+                $fp = fopen($oldProjectPathPlyr . "/" . $mapName . ".png", "wb");
+                fwrite($fp, $decodedImageData);
+                fclose($fp);
+
                 //マップオブジェクトデータを保存
                 $fp = fopen($oldProjectPath . "/" . $mapName . ".json", "wb");
                 fwrite($fp, $mapObjData);
                 fclose($fp);
+                $fp = fopen($oldProjectPathPlyr . "/" . $mapName . ".json", "wb");
+                fwrite($fp, $mapObjData);
+                fclose($fp);
+
                 //プロジェクトデータファイルを保存
                 $fp = fopen($oldProjectPath . "/projectData.json", "wb");
+                fwrite($fp, $projectData);
+                fclose($fp);
+                $fp = fopen($oldProjectPathPlyr . "/projectData.json", "wb");
                 fwrite($fp, $projectData);
                 fclose($fp);
 
@@ -414,6 +445,8 @@ class mapEditor {
         $html .= '<input type="hidden" name="map_image_data" value="" />';
         $html .= '<input type="hidden" name="map_obj_data" value="" />';
         $html .= '<input type="hidden" name="project_data" value="" />';
+        // $html .= '<input type="hidden" name="map_shift_x" value="" />';　//新規はいらないはずだが一応残しておく！
+        // $html .= '<input type="hidden" name="map_shift_y" value="" />';　//新規はいらないはずだが一応残しておく！
         $html .= '</form>';
         $html .= '</div>';
         $html .= '<div id="currentProjectDataContainer2">';
@@ -430,6 +463,7 @@ class mapEditor {
         $html .= '<input type="hidden" name="map_image_data" value="" />';
         $html .= '<input type="hidden" name="map_obj_data" value="" />';
         $html .= '<input type="hidden" name="project_data" value="" />';
+        $html .= '<input type="hidden" name="all_map_data" value="" />';
         $html .= '</form></div>';
         return $html;
     }

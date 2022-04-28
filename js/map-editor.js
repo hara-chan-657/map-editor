@@ -374,11 +374,12 @@ function setEditMap(evt) {
 			arrayMaptipType[i][j] = maptipTypeObj[i][j];//マップチップタイプだけでなく、設定済みの全データに変更
 		}	
 	}
-	console.log(arrayMaptipType);//開発用
 	mapColNum = currentMapImage.naturalWidth/mapLength;
 	mapRowNum = currentMapImage.naturalHeight/mapLength;
 	mapBG.style.width = mapColNum*mapLength + 'px';
 	mapStatus.innerHTML = 'マップステータス <br>■ 縦：' + mapRowNum + '行(' + mapRowNum*mapLength + 'px) ■ 横：' + mapColNum + '列(' + mapColNum*mapLength + 'px)';
+	document.getElementById("map_shift_x").innerText = '';
+	document.getElementById("map_shift_y").innerText = '';
 	if (mapName == projectDataObj['startMap']) {
 		startMapFlg = true; //選択したマップがプロジェクトのスタートマップだった場合フラグを立てる
 	} else {
@@ -509,6 +510,7 @@ function setCurrentMapChip(evt) {
 }
 
 //マップを表示する
+//
 function setMap(mode, direction, side) {
 
 	//マップを退避
@@ -525,6 +527,7 @@ function setMap(mode, direction, side) {
 				if (startMapFlg) {
 					editStartMapPos(mode, 'bottom'); //スタートマップならスタートポジションを更新（下方向に移動だからbottom）
 				}
+				calcMapShit('top', 'plus'); //マップのシフト情報を更新
 			} else if (side == 'bottom') {
 				mapContext.putImageData(evacuateMap, 0, 0);
 			} else {
@@ -546,6 +549,7 @@ function setMap(mode, direction, side) {
 				setArrayMaptipType(mode, direction, side);
 				if (side == 'top') {
 					mapContext.putImageData(evacuateMap, 0, -mapLength);
+					calcMapShit('top', 'minus'); //マップのシフト情報を更新
 				} else if (side == 'bottom') {
 					mapContext.putImageData(evacuateMap, 0, 0);
 				} else {
@@ -567,6 +571,7 @@ function setMap(mode, direction, side) {
 				if (startMapFlg) {
 					editStartMapPos(mode, 'right'); //スタートマップならスタートポジションを更新（左方向に移動だからright）
 				}
+				calcMapShit('left', 'plus'); //マップのシフト情報を更新
 			} else if (side == 'right') {
 				mapContext.putImageData(evacuateMap, 0, 0);
 			} else {
@@ -588,6 +593,7 @@ function setMap(mode, direction, side) {
 				setArrayMaptipType(mode, direction, side);
 				if (side == 'left') {
 					mapContext.putImageData(evacuateMap, -mapLength, 0);
+					calcMapShit('left', 'minus'); //マップのシフト情報を更新
 				} else if (side == 'right') {
 					mapContext.putImageData(evacuateMap, 0, 0);
 				} else {
@@ -806,6 +812,7 @@ function shiftCanvas (direction) {
 		if (startMapFlg) {
 			editStartMapPos('shift', direction); //スタートマップならスタートポジションを更新
 		}
+		calcMapShit('left', 'munus'); //マップのシフト情報を更新
 	} else if (direction == 'right') {
 	//右シフト
 		var rightLine = mapContext.getImageData(mapColNum*mapLength-mapLength, 0, mapLength, mapRowNum*mapLength);
@@ -817,6 +824,7 @@ function shiftCanvas (direction) {
 		if (startMapFlg) {
 			editStartMapPos('shift', direction); //スタートマップならスタートポジションを更新
 		}
+		calcMapShit('left', 'plus'); //マップのシフト情報を更新
 	} else if (direction == 'top') {
 	//上シフト
 		var topLine = mapContext.getImageData(0, 0, mapColNum*mapLength, mapLength);
@@ -828,6 +836,7 @@ function shiftCanvas (direction) {
 		if (startMapFlg) {
 			editStartMapPos('shift', direction); //スタートマップならスタートポジションを更新
 		}
+		calcMapShit('top', 'minus'); //マップのシフト情報を更新
 	} else if (direction == 'bottom') {
 	//下シフト
 		var bottomLine = mapContext.getImageData(0, mapRowNum*mapLength-mapLength, mapColNum*mapLength, mapLength);
@@ -839,12 +848,42 @@ function shiftCanvas (direction) {
 		if (startMapFlg) {
 			editStartMapPos('shift', direction); //スタートマップならスタートポジションを更新
 		}
+		calcMapShit('top', 'plus'); //マップのシフト情報を更新
 	} else {
 		//何もしない
 	}
 	setDraggingFlg(false);
 	//戻る進むを更新
 	//updataBackForward();
+}
+
+
+//画面のマップシフトの値を変更する
+function calcMapShit(direction, mode) {
+	var tmpX = Number(document.getElementById("map_shift_x").innerText);
+	var tmpY = Number(document.getElementById("map_shift_y").innerText);
+	if (direction == 'top') {
+	//top
+		if (mode == 'plus') {
+		// plus
+			document.getElementById("map_shift_y").innerText = tmpY+1;
+		} else {
+		// minus
+			document.getElementById("map_shift_y").innerText = tmpY-1;
+		}
+	} else {
+	//left
+		if (mode == 'plus') {
+		// plus
+			document.getElementById("map_shift_x").innerText = tmpX+1;
+		} else {
+		// minus
+			document.getElementById("map_shift_x").innerText = tmpX-1;
+		}
+
+	}
+
+
 }
 
 //ドラッグフラグをセットする
@@ -1069,7 +1108,7 @@ function setArrayMaptipType (mode, direction, side) {
 	if (mode == 'load') {
 		//マップチップ属性デフォルトセット
 		for (var i=0; i<mapRowNum; i++) {
-			arrayMaptipType[i] = [];
+			arrayMaptipType[i] = new Array();
 			for (var j=0; j<mapColNum; j++) {
 				arrayMaptipType[i][j] = new Object();
 				arrayMaptipType[i][j]['maptipType'] = 0;
@@ -1080,11 +1119,13 @@ function setArrayMaptipType (mode, direction, side) {
 			if (side == 'top') {
 				arrayMaptipType.unshift(new Array());
 				for (var i=0; i<mapColNum; i++) {
+					arrayMaptipType[0][i] = new Object();
 					arrayMaptipType[0][i]['maptipType'] = 0;
 				}
 			} else if (side == 'bottom') {
 				arrayMaptipType.push(new Array());
 				for (var i=0; i<mapColNum; i++) {
+					arrayMaptipType[mapRowNum-1][i] = new Object();
 					arrayMaptipType[mapRowNum-1][i]['maptipType'] = 0;
 				}
 			} else {
@@ -1094,11 +1135,13 @@ function setArrayMaptipType (mode, direction, side) {
 			if (side == 'left') {
 				for (var i=0; i<mapRowNum; i++) {
 					arrayMaptipType[i].unshift(new Array());
+					arrayMaptipType[i][0] = new Object();
 					arrayMaptipType[i][0]['maptipType'] = 0;
 				}
 			} else if (side == 'right') {
 				for (var i=0; i<mapRowNum; i++) {
 					arrayMaptipType[i].push(new Array());
+					arrayMaptipType[i][mapColNum-1] = new Object();
 					arrayMaptipType[i][mapColNum-1]['maptipType'] = 0;
 				}
 			} else {
@@ -1256,6 +1299,14 @@ function setProjectData(mode, projectData) {
 	}
 }
 
+//シフト情報を保存する
+function saveShiftData(mode) {
+	//画面のシフトの数をpost値（map_shift_x、map_shift_y）に入れる
+	document.forms['map_data'].elements['map_shift_x'].value = document.getElementById("map_shift_x").innerText;
+	document.forms['map_data'].elements['map_shift_y'].value = document.getElementById("map_shift_y").innerText;
+
+}
+
 
 //マップデータをサーバに保存する
 function saveMapDataToSever() {
@@ -1309,6 +1360,7 @@ function saveMapDataToSever() {
 			savaMaptipTypeAsJson('save');
 			saveMaptip('save');
 			setProjectData('save', oldProjectName);
+			//saveShiftData('save'); 　//新規はいらないはずだが一応残しておく！
 			//setProjectData('save', newProjectName);
 			MapDataForm.submit();
 		} else {
@@ -1320,24 +1372,36 @@ function saveMapDataToSever() {
 
 //マップデータをサーバに更新する
 function updateMapDataToSever() {
+	//プロジェクトのスタートマップの場合、スタートポジションのバリデーションを行う
 	if (startMapFlg) {
+		var shiftX = document.getElementById("map_shift_x").innerText;
+		var shiftY = document.getElementById("map_shift_y").innerText;
 		//スタートポジションのバリデーション
-		var sPosX = projectDataObj['startPosX'];
-		var sPosY = projectDataObj['startPosY'];
 		var sPosFlg = true;
-		if (sPosX > mapColNum || sPosY > mapRowNum) {
-			var ret = confirm('スタートマップに設定されているマップです。\n設定中スタートポジションが失われますがよろしいですか？');
+		if (shiftX != 0 && shiftY != 0) {
+			var ret = confirm('スタートマップに設定されている既存マップです。\n縦横ずらした分、設定中スタートポジションを更新します。\nよろしいですか？');
 			if (!ret) {
 				return;
 			}
-			sPosFlg = false; //スタートポシションの考慮を不要に
-		}
+			//スタートポジションを更新（いらなかった！行を増減させるたびに更新してた！）
+			// projectDataObj['startPosX'] = projectDataObj['startPosX'] + Number(shiftX); 
+			// projectDataObj['startPosY'] = projectDataObj['startPosY'] + Number(shiftY);
 
-		if (sPosFlg == true && arrayMaptipType[sPosY][sPosX]['maptipType'] != 3) {
-			alert('スタートマップに設定されているマップです。\nスタートポジションに設定できるのは、「地形通りぬけ」のマップチップのみです!\n編集してください\n\nスタートポジション = [' + sPosX + ',' + sPosY +']');
+			//更新した結果が不正な値（マイナスな値）ならreturn;
+			if (projectDataObj['startPosX'] < 0 || projectDataObj['startPosY'] < 0) {
+				alert('スタートポジションがマップの範囲外になってしまいます。\n修正してください。');
+				return;
+			}
+		}
+		if (arrayMaptipType[projectDataObj['startPosY']][projectDataObj['startPosX']]['maptipType'] != 3) {
+			alert('スタートポジションに設定できるのは、「地形通りぬけ」のマップチップのみです!\n編集してください\n\nスタートポジション = [' + projectDataObj['startPosX'] + ',' + projectDataObj['startPosY'] +']');
 			return;
 		}
 	}
+
+	//マップをシフトした分、関連するデータを更新する
+	updateDataByShiftNum(shiftX, shiftY);
+
 	var MapDataForm = document.forms['update_map_data'];
 	var mapData = '既存プロジェクト：' + currentProjectName +'\nマップ名：' + selectedMapName.innerText;
 	//いったん本当に良いかアラート
@@ -1348,8 +1412,177 @@ function updateMapDataToSever() {
 		savaMaptipTypeAsJson('update');
 		saveMaptip('update');
 		setProjectData('update', projectDataObj);
+		// saveShiftData('updata');
 		MapDataForm.submit();
 	}
+}
+
+//既存マップを編集でシフトした分の関連データを更新する
+var allMapData = [];
+function updateDataByShiftNum(shiftX, shiftY) {
+	//自身のマップの設定済みの以下のイベントの位置情報を更新する
+	//ムーブイベント
+	//デリートオブジェクトイベント
+	//マップイベントとオブジェクトイベントがあるので注意。
+	for (var i=0; i<arrayMaptipType.length; i++) {
+		for (var j=0; j<arrayMaptipType[i].length; j++) {
+			//マップイベント
+			if (arrayMaptipType[i][j].hasOwnProperty('events')) {
+				var eventNames = Object.keys(arrayMaptipType[i][j]['events']);
+				for (var k=0; k<eventNames.length; k++) {
+    				var firstLetter = eventNames[k].substr(0, 1);
+    				//イベント名が数字始まりだった場合（既存のイベント）の処理。変なイベント登録仕様にした過去の自分に後悔。
+    				if (isNaN(firstLetter) == false) {
+        				//イベントネームを取得
+        				var index = eventNames[k].indexOf('_');
+        				var eventName = eventNames[k].substr(index+1);
+        				if (eventName == 'move') {
+        					//chip_n > fromX fromYで情報を持っている
+        					//シフト分ずらす
+        					var chip_n_keys = Object.keys(arrayMaptipType[i][j]['events'][eventNames[k]]);
+        					for (var l=0; l<chip_n_keys.length; l++) {
+        						var index2 = chip_n_keys[l].indexOf('chip_');
+        						if (index2 == -1) continue;
+        						var chip_n_info = arrayMaptipType[i][j]['events'][eventNames[k]][chip_n_keys[l]];
+        						var tmpX = Number(chip_n_info['fromX'])+Number(shiftX);
+        						var tmpY = Number(chip_n_info['fromY'])+Number(shiftY);
+        						arrayMaptipType[i][j]['events'][eventNames[k]][chip_n_keys[l]]['fromX'] = tmpX.toString();
+        						arrayMaptipType[i][j]['events'][eventNames[k]][chip_n_keys[l]]['fromY'] = tmpY.toString();
+        					}
+        				}
+        				if (eventName == 'deleteObject') {
+        					//delX delYで情報を持っている
+        					//シフト分ずらす
+        					var tmpX = Number(arrayMaptipType[i][j]['events'][eventNames[k]]['delX'])+Number(shiftX);
+        					var tmpY = Number(arrayMaptipType[i][j]['events'][eventNames[k]]['delY'])+Number(shiftY);
+        					arrayMaptipType[i][j]['events'][eventNames[k]]['delX'] = tmpX.toString();
+        					arrayMaptipType[i][j]['events'][eventNames[k]]['delY'] = tmpY.toString();
+        				}
+    				}
+				}
+			}
+			//オブジェクトイベント
+			if (arrayMaptipType[i][j].hasOwnProperty('object') && arrayMaptipType[i][j]['object'].hasOwnProperty('events')) {
+				var eventNames = Object.keys(arrayMaptipType[i][j]['object']['events']);
+				for (var k=0; k<eventNames.length; k++) {
+    				var firstLetter = eventNames[k].substr(0, 1);
+    				//イベント名が数字始まりだった場合（既存のイベント）の処理。変なイベント登録仕様にした過去の自分に後悔。
+    				if (isNaN(firstLetter) == false) {
+        				//イベントネームを取得
+        				var index = eventNames[k].indexOf('_');
+        				var eventName = eventNames[k].substr(index+1);
+        				if (eventName == 'move') {
+        					//chip_n > fromX fromYで情報を持っている
+        					//シフト分ずらす
+        					var chip_n_keys = Object.keys(arrayMaptipType[i][j]['object']['events'][eventNames[k]]);
+        					for (var l=0; l<chip_n_keys.length; l++) {
+        						var index2 = chip_n_keys[l].indexOf('chip_');
+        						if (index2 == -1) continue;
+        						var chip_n_info = arrayMaptipType[i][j]['object']['events'][eventNames[k]][chip_n_keys[l]];
+        						var tmpX = Number(chip_n_info['fromX'])+Number(shiftX);
+        						var tmpY = Number(chip_n_info['fromY'])+Number(shiftY);
+        						arrayMaptipType[i][j]['object']['events'][eventNames[k]][chip_n_keys[l]]['fromX'] = tmpX.toString();
+        						arrayMaptipType[i][j]['object']['events'][eventNames[k]][chip_n_keys[l]]['fromY'] = tmpY.toString();
+        					}
+        				}
+        				if (eventName == 'deleteObject') {
+        					//delX delYで情報を持っている
+        					//シフト分ずらす
+        					var tmpX = Number(arrayMaptipType[i][j]['object']['events'][eventNames[k]]['delX'])+Number(shiftX);
+        					var tmpY = Number(arrayMaptipType[i][j]['object']['events'][eventNames[k]]['delY'])+Number(shiftY);
+        					arrayMaptipType[i][j]['object']['events'][eventNames[k]]['delX'] = tmpX.toString();
+        					arrayMaptipType[i][j]['object']['events'][eventNames[k]]['delY'] = tmpY.toString();
+        				}
+    				}
+				}
+			}
+		}
+	}
+	//トランジションイベント
+	//allMapDataを取得
+	//マップごとにループ
+	var mapNames = Object.keys(mapObj);
+	for (var k=0; k<mapNames.length; k++) {
+		allMapData[mapNames[k]] = [];
+		var maptipTypeObj = Object.keys(mapObj[mapNames[k]]).map(function (key) {return mapObj[mapNames[k]][key]});
+		//マップの行ごとにループ
+		for (var y=0; y<maptipTypeObj.length; y++) {
+			allMapData[mapNames[k]][y] = [];
+			//マップの列ごとにループ
+			var xIndexs = Object.keys(maptipTypeObj[y])
+			for (var x=0; x<xIndexs.length; x++) {
+				allMapData[mapNames[k]][y][x] = maptipTypeObj[y][xIndexs[x]];//マップチップタイプだけでなく、設定済みの全データ
+			}	
+		}
+	}
+	//allMapDataからトランジションデータを修正していく
+	//マップイベントとオブジェクトイベントがあるので注意。
+	for (var i=0; i<mapNames.length; i++) {
+		for (var y=0; y<allMapData[mapNames[i]].length; y++) {
+			for (var x=0; x<allMapData[mapNames[i]][y].length; x++) {
+				//マップイベントのトランジション
+				if (allMapData[mapNames[i]][y][x].hasOwnProperty('events')) {
+					var eventNames = Object.keys(allMapData[mapNames[i]][y][x]['events']);
+					for (var j=0; j<eventNames.length; j++) {
+    					var firstLetter = eventNames[j].substr(0, 1);
+    					//イベント名が数字始まりだった場合（既存のイベント）の処理。変なイベント登録仕様にした過去の自分に後悔。
+    					if (isNaN(firstLetter) == false) {
+        					//イベントネームを取得
+        					var index = eventNames[j].indexOf('_');
+        					var eventName = eventNames[j].substr(index+1);
+        					if (eventName == 'transition') {
+        						//遷移先が編集中のマップへだったら
+        						if (allMapData[mapNames[i]][y][x]['events'][eventNames[j]]['transitionMap'] == selectedMapName.innerText) {
+        							//シフト分ずらす
+        							var tmpX = Number(allMapData[mapNames[i]][y][x]['events'][eventNames[j]]['transitionX'])+Number(shiftX);
+        							var tmpY = Number(allMapData[mapNames[i]][y][x]['events'][eventNames[j]]['transitionY'])+Number(shiftY);
+        							allMapData[mapNames[i]][y][x]['events'][eventNames[j]]['transitionX'] = tmpX.toString();
+        							allMapData[mapNames[i]][y][x]['events'][eventNames[j]]['transitionY'] = tmpY.toString();
+        						}
+        					}
+    					}
+					}
+				}
+				//オブジェクトイベントのトランジション
+				if (allMapData[mapNames[i]][y][x].hasOwnProperty('object') && allMapData[mapNames[i]][y][x]['object'].hasOwnProperty('events')) {
+					var eventNames = Object.keys(allMapData[mapNames[i]][y][x]['object']['events']);
+					for (var j=0; j<eventNames.length; j++) {
+    					var firstLetter = eventNames[j].substr(0, 1);
+    					//イベント名が数字始まりだった場合（既存のイベント）の処理。変なイベント登録仕様にした過去の自分に後悔。
+    					if (isNaN(firstLetter) == false) {
+        					//イベントネームを取得
+        					var index = eventNames[j].indexOf('_');
+        					var eventName = eventNames[j].substr(index+1);
+        					if (eventName == 'transition') {
+        						if (allMapData[mapNames[i]][y][x]['object']['events'][eventNames[j]]['transitionMap'] == selectedMapName.innerText) {
+        							//シフト分ずらす
+        							var tmpX = Number(allMapData[mapNames[i]][y][x]['object']['events'][eventNames[j]]['transitionX'])+Number(shiftX);
+        							var tmpY = Number(allMapData[mapNames[i]][y][x]['object']['events'][eventNames[j]]['transitionY'])+Number(shiftY);
+        							allMapData[mapNames[i]][y][x]['object']['events'][eventNames[j]]['transitionX'] = tmpX.toString();
+        							allMapData[mapNames[i]][y][x]['object']['events'][eventNames[j]]['transitionY'] = tmpY.toString();
+        						}
+        					}
+    					}
+					}
+				}
+			}
+		}
+	}
+
+	//allMapDataをストリンギファイしてフォームに詰める
+	var obj = new Object();
+	for (var i=0; i<mapNames.length; i++) {
+		obj[mapNames[i]] = new Object();
+		for (var j=0; j<allMapData[mapNames[i]].length; j++) {
+			obj[mapNames[i]][j] = new Object();
+			for (var k=0; k<allMapData[mapNames[i]][j].length; k++) {
+				obj[mapNames[i]][j][k] = new Object();
+				obj[mapNames[i]][j][k] = allMapData[mapNames[i]][j][k];
+			}
+		}
+	}
+	var objTxt = JSON.stringify(obj);
+	document.forms['update_map_data'].elements['all_map_data'].value = objTxt;
 }
 
 var isNormal = true; //ノートPC

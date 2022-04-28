@@ -30,7 +30,7 @@ if (isset($_POST['mapchipPath'])) {
     } else {
         echo $_POST['mapchipPath'] . ' を削除できませんでした。';
     }
-    
+
     if (isset($ret['dir'])) {
         if ($ret['dir']) {
             echo '<br>最後のファイルなのでディレクトリも削除しました！';
@@ -62,9 +62,10 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
         $updateMapProject = $_POST['updateMapProject'];
         $mapName = $_POST['updateMapName'];
         $projectData = $_POST['project_data'];
-        $ret = $obj->updateMapData($updateMapProject, $mapImageData, $mapObjData, $mapName, $projectData);
+        $allMapData = $_POST['all_map_data'];
+        $ret = $obj->updateMapData($updateMapProject, $mapImageData, $mapObjData, $mapName, $projectData, $allMapData);
         if ($ret) {
-            echo '更新しました！※rpg-editorからrpg-playerへデータの更新もしてください！';
+            echo 'rpg-editorとrpg-playerを更新しました！';
         } else {
             echo $ret;
         }
@@ -109,8 +110,9 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
 	</div>
     <ul>
         <li style="color:red">※マップの大きさを変更した時点で、「戻る・進む」はリセットされます（これは仕様）</li>
-        <li style="color:red">※デリート時、「マップ属性用もどる配列」のデータを一つ多く更新してしまうバグがたまに起きる（発生条件不明、なのでデリート→もどるは注意）。</li>
+        <li style="color:red">※デリート時、「マップ属性用もどる配列」のデータを一つ多く更新してしまうバグがたまに起きる（発生条件不明、なのでデリート→もどるは注意）</li>
         <li style="color:red">※複数行・複数列のマップチップを使用する際は、はみ出ないように描画してください（めんどくさくて直していないバグ）</li>
+        <li style="color:red">※シフトする際は画面をまたがないようにしてください（設定済みの特定のイベントやプロジェクトデータが不正になる恐れがある）</li>
     </ul>
     <div id="editContainer">
         <div id="options">
@@ -134,6 +136,7 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
         <div id="canvas-container">
             <button onclick="switchCanvasSize()">キャンバス大きさ変更</button>
             <p>カーソル位置（<span id="cursorPos"></span>）</p>
+            <p>シフトX（<span id="map_shift_x">0</span>）： シフトY（<span id="map_shift_y">0</span>）</p>
             <div id="mapStatusContainer">
                 <p id="mapStatus"></p>
                 <p id="selectedMapName"></p>
