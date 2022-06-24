@@ -222,6 +222,7 @@ DlLink.addEventListener('click', downloadCanvas, false);
 ////////////////////////////　　以下ファンクション   //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+//戻るの完全禁止
 history.pushState(null, null, location.href);
 window.addEventListener('popstate', (e) => {
   history.go(1);
@@ -1389,9 +1390,6 @@ function updateMapDataToSever() {
 			if (!ret) {
 				return;
 			}
-			//スタートポジションを更新（いらなかった！行を増減させるたびに更新してた！）
-			// projectDataObj['startPosX'] = projectDataObj['startPosX'] + Number(shiftX); 
-			// projectDataObj['startPosY'] = projectDataObj['startPosY'] + Number(shiftY);
 
 			//更新した結果が不正な値（マイナスな値）ならreturn;
 			if (projectDataObj['startPosX'] < 0 || projectDataObj['startPosY'] < 0) {
@@ -1596,14 +1594,10 @@ function switchCanvasSize() {
     if (isNormal) {
         document.getElementById('mapContainer').style.width = 2000 + 'px';
         document.getElementById('mapContainer').style.height = 1300 + 'px';
-        //document.getElementById('mapBG').style.width = 2000 + 'px';
-        //document.getElementById('mapBG').style.height = 1300 + 'px';
         isNormal = false;
     } else {
         document.getElementById('mapContainer').style.width = 480 + 'px';
         document.getElementById('mapContainer').style.height = 480 + 'px';
-        //document.getElementById('mapBG').style.width = 480 + 'px';
-        //document.getElementById('mapBG').style.height = 480 + 'px';
         isNormal = true;
     }
 }

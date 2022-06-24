@@ -437,8 +437,6 @@ class mapEditor {
         $html .= '<br><input type="radio" id="old" name="projectType" value="old" checked>既存のプロジェクトに追加<br>';
         $html .= $this->getProjects2();
         //新規プロジェクトの追加はマップエディターではなくドットエディターで行う。なので既存のプロジェクトに追加のみ。
-        // $html .= '<br><br><input type="radio" id="new" name="projectType" value="new">新規プロジェクトに追加<br>';
-        // $html .= '<input type="text" id="newProjectName" name="newProjectName"><br>';
         $html .= '<br><p>マップ名を入力</p>';
         $html .= '<input type="text" id="mapName" name="mapName"><br>';        
         $html .= '<span id="save-map-data">この内容でサーバに保存</span>';

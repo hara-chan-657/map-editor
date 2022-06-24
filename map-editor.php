@@ -109,10 +109,10 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
 		<img src="./image/map-editor/header.png" alt="ヘッダー画像">	
 	</div>
     <ul>
-        <li style="color:red">※マップの大きさを変更した時点で、「戻る・進む」はリセットされます（これは仕様）</li>
-        <li style="color:red">※デリート時、「マップ属性用もどる配列」のデータを一つ多く更新してしまうバグがたまに起きる（発生条件不明、なのでデリート→もどるは注意）</li>
-        <li style="color:red">※複数行・複数列のマップチップを使用する際は、はみ出ないように描画してください（めんどくさくて直していないバグ）</li>
-        <li style="color:red">※シフトする際は画面をまたがないようにしてください（設定済みの特定のイベントやプロジェクトデータが不正になる恐れがある）</li>
+        <li style="color:red; font-size: 8px;">※マップの大きさを変更した時点で、「戻る・進む」はリセットされます（これは仕様）</li>
+        <li style="color:red; font-size: 8px;">※デリート時、「マップ属性用もどる配列」のデータを一つ多く更新してしまうバグがたまに起きる（発生条件不明、なのでデリート→もどるは注意）</li>
+        <li style="color:red; font-size: 8px;">※複数行・複数列のマップチップを使用する際は、はみ出ないように描画してください（めんどくさくて直していない仕様）</li>
+        <li style="color:red; font-size: 8px;">※シフトする際は画面をまたがないようにしてください（設定済みの特定のイベントやプロジェクトデータが不正になる恐れがある）</li>
     </ul>
     <div id="editContainer">
         <div id="options">
@@ -171,7 +171,6 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
                 </p>
                 <?php echo $projectsData ?>
             </div>
-            <p>確認コマンド：console.log(arrayMaptipType);</p>
         </div>
     </div>
     <div id="preview-container">
