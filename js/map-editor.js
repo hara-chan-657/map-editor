@@ -26,6 +26,10 @@ var currentMapChipColNum;
 var arrayMaptipType = [];
 //１マップ大きさ
 var mapLength = 32;
+//表示キャンバス横
+var viewCanvasWidth = 736;
+//表示キャンバス縦
+var viewCanvasHeight = 480;
 //マップ行数
 var mapRowNum = 15;
 //マップ列数
@@ -173,6 +177,7 @@ if (document.getElementById('update-map-data') != null) {
 ///////////////////////////////////////////////////////////////////////////////////////////
 window.addEventListener('load', setDefault, false);
 document.addEventListener('keydown', function (evt) {doKeyEvent(evt);}, false);
+document.addEventListener('keyup', function (evt) {doKeyEvent(evt);}, false);
 for (var i=0; i<option.length; i++) {
 	option[i].addEventListener('mouseenter', function(evt) {showDetail(evt);}, false);
 }
@@ -236,6 +241,7 @@ function setDefault() {
 }
 
 //キーボードからの入力でイベントを実行する
+var bkCanvasForWinRect = null;
 function doKeyEvent (evt) {
 	//戻る
 	if (evt.key === 'z' && (evt.ctrlKey || evt.metaKey)) {
@@ -247,7 +253,17 @@ function doKeyEvent (evt) {
 		if (forwardArray.length > 0) {
 			doForward();
 		}
-	} else {
+	} else if (evt.key === 'w') {
+
+    	if (bkCanvasForWinRect == null) bkCanvasForWinRect = mapContext.getImageData(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
+
+    	if( evt.repeat ) {
+    		showWindowRect(evt);
+    	} else {
+    		mapContext.putImageData(bkCanvasForWinRect,0,0);
+    		bkCanvasForWinRect = null;
+    	}
+    } else {
 		return;
 	}
 }
@@ -924,6 +940,8 @@ function setDraggingFlg (bool) {
 
 //カーソル位置を表示
 var cursorPos = document.getElementById("cursorPos");
+var cursorPosHiddenX = 0;
+var cursorPosHiddenY = 0;
 function showCursorPos(evt) {
 	//クリックした座標を取得する
 	var mousePos = getMousePosition(mapCanvas, evt);
@@ -933,8 +951,25 @@ function showCursorPos(evt) {
 	var tmpPositionX = Math.floor(x/mapLength);
 	var tmpPositionY = Math.floor(y/mapLength);
 
+	cursorPosHiddenX = tmpPositionX;
+	cursorPosHiddenY = tmpPositionY;
+
 	cursorPos.innerText = tmpPositionX + "：" + tmpPositionY;
 
+}
+
+function showWindowRect(evt) {
+
+	// パスをリセット
+	mapContext.beginPath();
+	// レクタングルの座標(50,50)とサイズ(75,50)を指定
+	mapContext.rect(cursorPosHiddenX*mapLength ,cursorPosHiddenY*mapLength , viewCanvasWidth, viewCanvasHeight);
+	// 線の色
+	mapContext.strokeStyle = "orange";
+	// 線の太さ
+	mapContext.lineWidth =  3;
+	// 線を描画を実行
+	mapContext.stroke() ;
 }
 
 //マップを編集する

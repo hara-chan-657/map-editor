@@ -142,6 +142,7 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
                 <p id="selectedMapName"></p>
                 <button id="clearSelectedMapButton">選択中マップの編集を中止する</button>
             </div>
+            <p style="color: red">wキー長押し：playerの画面幅を表示します</p>
             <div id="mapContainer">
                 <div id="mapBG">
                     <canvas id="mapCanvas"></canvas>
