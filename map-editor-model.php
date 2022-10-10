@@ -266,7 +266,7 @@ class mapEditor {
                     $project .= '<form name="deleteMap action="" method="post">';
                     $project .= '<p class="mapNames">'. $pngBaseName. '</p>';
                     $project .= '<img src="' . $pngFile .'" class="maps" width="200" height="150" alt="'. $pngBaseName .'">';
-                    $project .= '<br><input type="submit" value="※削除" style="background-color:red"></input>';
+                    $project .= '<br><input type="submit" value="※削除" style="background-color:red" onclick="confirmDelMap(event)"></input>';
                     $project .= '<input type="hidden" name="deleteMap" value="true"></input>';
                     $project .= '<input type="hidden" name="projectName" value="' . $dir .'"></input>';
                     $project .= '<input type="hidden" name="pngBaseName" value="' . $pngBaseName .'"></input>';

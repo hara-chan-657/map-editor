@@ -1662,3 +1662,12 @@ function switchCanvasSize() {
     }
 }
 
+function confirmDelMap(e) {
+
+	var res = confirm('マップを削除します。\nよろしいですか？');
+	if (!res) {
+		e.preventDefault();
+		return;
+	}
+}
+
