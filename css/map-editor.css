@@ -223,7 +223,7 @@ body {
 	text-decoration: none;
 }
 
-#save-map-data, #update-map-data {
+#save-map-data, #update-map-data, #copy-map-data {
 	background-color: green;
 	color: white;
 	padding: 8px;
@@ -239,6 +239,14 @@ body {
 	margin:30px;
 	background-color: white;
 	border: red solid 1px;
+	max-width: 400px;
+}
+
+#map-copy-container {
+	display: none;
+	margin:30px;
+	background-color: white;
+	border: orange solid 1px;
 	max-width: 400px;
 }
 

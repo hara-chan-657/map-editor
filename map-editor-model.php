@@ -466,6 +466,20 @@ class mapEditor {
         return $html;
     }
 
+    function getMapCopyContainer() {
+        $html = '<div id="map-copy-container"><form name="copy_map_data" action="" method="post">';
+        $html .= '<p style="color:red">※ 既存のマップを複製します。</p>';
+        $html .= '<input type="text" id="copyMapProject" name="copyMapProject" value="" readonly="readonly"><br>';
+        $html .= '<input type="text" id="copyMapName" name="copyMapName" value=""><span>※被らない名前を入力してください</span><br>';
+        $html .= '<span id="copy-map-data">マップを複製</span>';
+        $html .= '<input type="hidden" name="map_image_data" value="" />';
+        $html .= '<input type="hidden" name="map_obj_data" value="" />';
+        $html .= '<input type="hidden" name="project_data" value="" />';
+        $html .= '<input type="hidden" name="all_map_data" value="" />';
+        $html .= '</form></div>';
+        return $html;
+    }
+
     function getdeleteMaptipBtn() {
         $html = '</span><span id="deleteMapchip">削除</span>';
         $html .= '<div id="deleteMapchipContainer"><form name="deleteMapchip" action="" method="post">';

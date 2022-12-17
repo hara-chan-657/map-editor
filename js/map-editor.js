@@ -170,6 +170,17 @@ if (document.getElementById('update-map-data') != null) {
 	var updateMapData = document.getElementById('update-map-data');
 	updateMapData.addEventListener('click', updateMapDataToSever, false);
 }
+//マップ複製コンテナ
+var mapCopyContainer = document.getElementById('map-copy-container');
+//複製マッププロジェクト
+var copyMapProject = document.getElementById('copyMapProject');
+//複製マップ名
+var copyMapName = document.getElementById('copyMapName');
+//マップ複製
+if (document.getElementById('copy-map-data') != null) {
+	var copyMapData = document.getElementById('copy-map-data');
+	copyMapData.addEventListener('click', copyMapDataToSever, false);
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -259,6 +270,16 @@ function doKeyEvent (evt) {
 
     	if( evt.repeat ) {
     		showWindowRect(evt);
+    	} else {
+    		mapContext.putImageData(bkCanvasForWinRect,0,0);
+    		bkCanvasForWinRect = null;
+    	}
+    } else if (evt.key === 'e') {
+
+    	if (bkCanvasForWinRect == null) bkCanvasForWinRect = mapContext.getImageData(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
+
+    	if( evt.repeat ) {
+    		showCurrentChipRect(evt);
     	} else {
     		mapContext.putImageData(bkCanvasForWinRect,0,0);
     		bkCanvasForWinRect = null;
@@ -363,6 +384,7 @@ function clearSelectedMap() {
 			//マップ更新用コンテナを保存用コンテナへ切り替え
 			saveMapContainer.style.display = 'block';
 			mapUpdateContainer.style.display = 'none';
+			mapCopyContainer.style.display = 'none';
         }
 }
 
@@ -401,8 +423,8 @@ function setEditMap(evt) {
 	mapRowNum = currentMapImage.naturalHeight/mapLength;
 	mapBG.style.width = mapColNum*mapLength + 'px';
 	mapStatus.innerHTML = 'マップステータス <br>■ 縦：' + mapRowNum + '行(' + mapRowNum*mapLength + 'px) ■ 横：' + mapColNum + '列(' + mapColNum*mapLength + 'px)';
-	document.getElementById("map_shift_x").innerText = '';
-	document.getElementById("map_shift_y").innerText = '';
+	document.getElementById("map_shift_x").innerText = '0';
+	document.getElementById("map_shift_y").innerText = '0';
 	if (mapName == projectDataObj['startMap']) {
 		startMapFlg = true; //選択したマップがプロジェクトのスタートマップだった場合フラグを立てる
 	} else {
@@ -413,9 +435,12 @@ function setEditMap(evt) {
 	//マップ保存用コンテナを更新用コンテナへ切り替え
 	saveMapContainer.style.display = 'none';
 	mapUpdateContainer.style.display = 'block';
+	mapCopyContainer.style.display = 'block';
 	//更新用コンテナのフォームに更新用マップの情報をいれる
 	updateMapProject.value = currentProjectName;
 	updateMapName.value = evt.target.alt;
+	copyMapProject.value = currentProjectName;
+	copyMapName.value = evt.target.alt;
 }
 
 //プロジェクトのjsonをすべてオブジェクトにロードする
@@ -972,6 +997,22 @@ function showWindowRect(evt) {
 	mapContext.stroke() ;
 }
 
+function showCurrentChipRect(evt) {
+	
+	// パスをリセット
+	mapContext.beginPath();
+	// レクタングル
+	mapContext.rect(cursorPosHiddenX*mapLength ,cursorPosHiddenY*mapLength , currentMapChipColNum*mapLength, currentMapChipRowNum*mapLength);
+	// 線の色
+	mapContext.strokeStyle = "red";
+	// 線の太さ
+	mapContext.lineWidth =  3;
+	// 線を描画を実行
+	mapContext.stroke() ;
+	//現在チップを表示
+	mapContext.drawImage(currentMapChip, cursorPosHiddenX*mapLength ,cursorPosHiddenY*mapLength);
+}
+
 //マップを編集する
 //param1 : クリック時イベント情報
 function editMap(evt) {
@@ -1304,6 +1345,8 @@ function savaMaptipTypeAsJson(mode) {
 		document.forms['map_data'].elements['map_obj_data'].value = objTxt;
 	} else if (mode == 'update') {
 		document.forms['update_map_data'].elements['map_obj_data'].value = objTxt;
+	} else if ('copy') {
+		document.forms['copy_map_data'].elements['map_obj_data'].value = objTxt;
 	} else {
 
 	}
@@ -1318,8 +1361,10 @@ function saveMaptip(mode) {
 		document.forms['map_data'].elements['map_image_data'].value = data;
 	} else if (mode == 'update') {
 		document.forms['update_map_data'].elements['map_image_data'].value = data;
+	} else if (mode == 'copy') {
+		document.forms['copy_map_data'].elements['map_image_data'].value = data;
 	} else {
-		
+
 	}
 }
 
@@ -1336,8 +1381,11 @@ function setProjectData(mode, projectData) {
 	} else if (mode == 'update') {
 		var objTxt = JSON.stringify(projectData); //更新の場合プロジェクトデータが渡ってくる
 		document.forms['update_map_data'].elements['project_data'].value = objTxt;
+	} else if (mode == 'copy') {
+		var objTxt = JSON.stringify(projectData); //複製の場合プロジェクトデータが渡ってくる
+		document.forms['copy_map_data'].elements['project_data'].value = objTxt;
 	} else {
-		
+
 	}
 }
 
@@ -1414,10 +1462,12 @@ function saveMapDataToSever() {
 
 //マップデータをサーバに更新する
 function updateMapDataToSever() {
+
+	var shiftX = document.getElementById("map_shift_x").innerText;
+	var shiftY = document.getElementById("map_shift_y").innerText;
+
 	//プロジェクトのスタートマップの場合、スタートポジションのバリデーションを行う
 	if (startMapFlg) {
-		var shiftX = document.getElementById("map_shift_x").innerText;
-		var shiftY = document.getElementById("map_shift_y").innerText;
 		//スタートポジションのバリデーション
 		var sPosFlg = true;
 		if (shiftX != 0 && shiftY != 0) {
@@ -1451,6 +1501,30 @@ function updateMapDataToSever() {
 		savaMaptipTypeAsJson('update');
 		saveMaptip('update');
 		setProjectData('update', projectDataObj);
+		// saveShiftData('updata');
+		MapDataForm.submit();
+	}
+}
+
+//マップデータをサーバに複製する
+function copyMapDataToSever() {
+
+	var shiftX = document.getElementById("map_shift_x").innerText;
+	var shiftY = document.getElementById("map_shift_y").innerText;
+
+	//マップをシフトした分、関連するデータを更新する
+	updateDataByShiftNum(shiftX, shiftY);
+
+	var MapDataForm = document.forms['copy_map_data'];
+	var mapData = '既存プロジェクト：' + currentProjectName +'\nマップ名：' + selectedMapName.innerText;
+	//いったん本当に良いかアラート
+	var confirmTxt = '下記の情報でマップデータをサーバに保存します。\n\n' + mapData + '\n\n編集画面には戻れません。\nよろしいですか？';
+	var ret = confirm(confirmTxt);
+	if (ret) {
+		//アラートの結果もよければ、マップデータを保存して、サブミット
+		savaMaptipTypeAsJson('copy');
+		saveMaptip('copy');
+		setProjectData('copy', projectDataObj);
 		// saveShiftData('updata');
 		MapDataForm.submit();
 	}
@@ -1647,6 +1721,7 @@ function updateDataByShiftNum(shiftX, shiftY) {
 	}
 	var objTxt = JSON.stringify(obj);
 	document.forms['update_map_data'].elements['all_map_data'].value = objTxt;
+	document.forms['copy_map_data'].elements['all_map_data'].value = objTxt;
 }
 
 var isNormal = true; //ノートPC

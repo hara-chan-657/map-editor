@@ -11,12 +11,14 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 	if ($adminRes) {
         $saveMapContainer = $obj->getSaveMapContainer();
         $mapUpdateContainer = $obj->getMapUpdateContainer();
+        $mapCopyContainer = $obj->getMapCopyContainer();
         $projectsData = $obj->getProjectsData();
         $deleteMaptipBtn = $obj->getdeleteMaptipBtn();
 	}
 } else {
     $saveMapContainer = '';
     $mapUpdateContainer = '';
+    $mapCopyContainer = '';
     $projectsData = '';
     $deleteMaptipBtn = '';
 }
@@ -57,7 +59,7 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
         } else {
             echo $ret;
         }
-    } else {
+    } else if (isset($_POST['updateMapName'])) {
         //マップ更新の場合
         $updateMapProject = $_POST['updateMapProject'];
         $mapName = $_POST['updateMapName'];
@@ -66,6 +68,17 @@ if (isset($_POST['map_image_data']) && isset($_POST['map_obj_data'])) {
         $ret = $obj->updateMapData($updateMapProject, $mapImageData, $mapObjData, $mapName, $projectData, $allMapData);
         if ($ret) {
             echo 'rpg-editorとrpg-playerを更新しました！';
+        } else {
+            echo $ret;
+        }
+    } else {
+        //マップ複製の場合
+        $updateMapProject = $_POST['copyMapProject'];
+        $mapName = $_POST['copyMapName'];
+        $projectData = $_POST['project_data'];
+        $ret = $obj->addMapDataToOldProject($updateMapProject, $mapImageData, $mapObjData, $mapName, $projectData);
+        if ($ret) {
+            echo '複製しました！';
         } else {
             echo $ret;
         }
@@ -142,7 +155,8 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
                 <p id="selectedMapName"></p>
                 <button id="clearSelectedMapButton">選択中マップの編集を中止する</button>
             </div>
-            <p style="color: red">wキー長押し：playerの画面幅を表示します</p>
+            <p style="color: red; margin:1px;">wキー長押し：playerの画面幅を表示します</p>
+            <p style="color: red; margin:1px;">eキー長押し：選択中チップの範囲と画像を描画します</p>
             <div id="mapContainer">
                 <div id="mapBG">
                     <canvas id="mapCanvas"></canvas>
@@ -181,6 +195,7 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
         <a id="download-link" href="" download="">ダウンロード</a>
         <?php echo $saveMapContainer ?>
         <?php echo $mapUpdateContainer ?>
+        <?php echo $mapCopyContainer ?>
     </div>
 
     <script src="./js/map-editor.js"></script>
