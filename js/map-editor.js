@@ -253,14 +253,15 @@ function setDefault() {
 
 //キーボードからの入力でイベントを実行する
 var bkCanvasForWinRect = null;
+var bkCanvasForTags = null;
 function doKeyEvent (evt) {
 	//戻る
-	if (evt.key === 'z' && (evt.ctrlKey || evt.metaKey)) {
+	if (evt.key === 'a' && (evt.ctrlKey || evt.metaKey)) {
 		if (backArray.length > 0) {
 			doBack();
 		}
 	//進む
-	} else if (evt.key === 'u' && (evt.ctrlKey || event.metaKey)) {
+	} else if (evt.key === 's' && (evt.ctrlKey || event.metaKey)) {
 		if (forwardArray.length > 0) {
 			doForward();
 		}
@@ -283,6 +284,17 @@ function doKeyEvent (evt) {
     	} else {
     		mapContext.putImageData(bkCanvasForWinRect,0,0);
     		bkCanvasForWinRect = null;
+    	}
+    } else if (evt.key === 'r') {
+
+    	if (bkCanvasForTags == null) bkCanvasForTags = mapContext.getImageData(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
+
+    	if( evt.repeat ) {
+			//特殊チップタグを表示
+			drawSpecialChipTags();
+    	} else {
+    		mapContext.putImageData(bkCanvasForTags,0,0);
+    		bkCanvasForTags = null;
     	}
     } else {
 		return;
@@ -333,9 +345,6 @@ function doBack() {
 		forward.style.display = "inline";
 	}
 
-	//特殊チップにタグを表示する
-	drawSpecialChipTags();
-
 }
 
 //canvasの状態を戻したものを一個進める
@@ -361,9 +370,6 @@ function doForward () {
 		forwardDummy.style.display = "inline";
 		forward.style.display = "none";
 	}
-
-	//特殊チップにタグを表示する
-	drawSpecialChipTags();
 
 }
 
@@ -505,8 +511,6 @@ function setEditMap(evt) {
 		tmpRow.push(arrayMaptipType[i].concat()); //配列をpushするときは、concat()しないと参照渡しになってしまうので注意！
 	}
 	orgEditMapJson = tmpRow.concat();
-	//特殊チップにタグを表示する
-	drawSpecialChipTags();
 	mapColNum = currentMapImage.naturalWidth/mapLength;
 	mapRowNum = currentMapImage.naturalHeight/mapLength;
 	mapBG.style.width = mapColNum*mapLength + 'px';
@@ -1203,9 +1207,6 @@ function editMap(evt) {
     	} else if (currentModeId == '') {
 
 		}
-
-		//特殊チップタグを表示
-		drawSpecialChipTags();
 
 	}
 }
