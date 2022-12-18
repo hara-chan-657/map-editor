@@ -300,21 +300,30 @@ function doBack() {
 	forwardArrayJson.push(lastDataJson);
 	//canvasをクリア
 	mapContext.clearRect(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
-	//一個前（だった）の戻る用配列のcanvasを表示
 	if (backArray.length > 0) {
-		var preCanvas = backArray[backArray.length-1];
-		mapContext.putImageData(preCanvas,0,0);
+		//一個前（だった）の戻る用配列のcanvasを表示
+		mapContext.putImageData(backArray[backArray.length-1],0,0);
 		//一個前（だった）の戻る用配列jsonのjsonを現在のjsonに
 		arrayMaptipType = backArrayJson[backArrayJson.length-1].concat();
-	} else {
-		//もう戻れない場合
-		//setArrayMaptipType('load'); //マップチップ属性配列を初期化
-		for (var i=0; i<mapRowNum; i++) {
-			arrayMaptipType[i] = [];
-			for (var j=0; j<mapColNum; j++) {
-				arrayMaptipType[i][j]['maptipType'] = 0;
+	}
+
+	if (backArray.length == 0) {
+
+		if (orgEditMapImg != null && orgEditMapJson != null) {
+			//一個前（だった）の戻る用配列のcanvasを表示
+			mapContext.drawImage(orgEditMapImg, 0, 0);
+			//一個前（だった）の戻る用配列jsonのjsonを現在のjsonに
+			arrayMaptipType = orgEditMapJson;
+		} else {
+			//もう戻れないので、画像は表示しない
+			//チップ属性のみ初期化する
+			for (var i=0; i<mapRowNum; i++) {
+				for (var j=0; j<mapColNum; j++) {
+					arrayMaptipType[i][j]['maptipType'] = 0;
+				}
 			}
 		}
+
 		//戻るを非活性に
 		back.style.display = "none";
 		backDummy.style.display = "inline";
@@ -323,6 +332,10 @@ function doBack() {
 		forwardDummy.style.display = "none";
 		forward.style.display = "inline";
 	}
+
+	//特殊チップにタグを表示する
+	drawSpecialChipTags();
+
 }
 
 //canvasの状態を戻したものを一個進める
@@ -348,6 +361,68 @@ function doForward () {
 		forwardDummy.style.display = "inline";
 		forward.style.display = "none";
 	}
+
+	//特殊チップにタグを表示する
+	drawSpecialChipTags();
+
+}
+
+//マップ編集上、特殊なチップはわかりやすい様にタグを表示する
+function drawSpecialChipTags() {
+	for (var i=0; i<arrayMaptipType.length; i++) {
+		for (var j=0; j<arrayMaptipType[i].length; j++) {
+            //一番最初に、マップ分類に近いマップ交互のデータを描画
+            if (arrayMaptipType[i][j].hasOwnProperty('turnChip')) {
+                drawTags('turnChip',j,i);
+            }
+            if (arrayMaptipType[i][j].hasOwnProperty('turnChipPass')) {
+                drawTags('turnChip',j,i);
+            }
+            if (arrayMaptipType[i][j]['maptipType'] == 6){
+                drawTags('repeatChip',j,i);
+            }
+        }
+    }
+}
+
+//タグを描画する（タイプ、x、y）
+function drawTags(type, j, i) {
+
+    switch(type) {
+
+        case 'turnChip':
+            // パスをリセット
+            mapContext.beginPath () ;
+            // レクタングルの座標(50,50)とサイズ(75,50)を指定
+            mapContext.rect(j*mapLength ,i*mapLength , 10, 10);
+            // 塗りつぶしの色
+            mapContext.fillStyle = "lime"; //イベントは設定済みだが、トリガーを設定してない場合、黄色
+            // 塗りつぶしを実行
+            mapContext.fill();
+            // 線の色
+            mapContext.strokeStyle = "purple" ;
+            // 線の太さ
+            mapContext.lineWidth =  1;
+            // 線を描画を実行
+            mapContext.stroke() ;
+        break;
+        case 'repeatChip':
+            // パスをリセット
+            mapContext.beginPath () ;
+            // レクタングルの座標(50,50)とサイズ(75,50)を指定
+            mapContext.rect(j*mapLength ,i*mapLength , 10, 10);
+            // 塗りつぶしの色
+            mapContext.fillStyle = "yellow"; //イベントは設定済みだが、トリガーを設定してない場合、黄色
+            // 塗りつぶしを実行
+            mapContext.fill();
+            // 線の色
+            mapContext.strokeStyle = "purple" ;
+            // 線の太さ
+            mapContext.lineWidth =  1;
+            // 線を描画を実行
+            mapContext.stroke() ;
+        break;
+    }
 }
 
 //マップチップを削除する
@@ -389,6 +464,8 @@ function clearSelectedMap() {
 }
 
 //編集するマップをセットする
+var orgEditMapImg = null;
+var orgEditMapJson = null;
 function setEditMap(evt) {
     //本当は同じマップだったらスキップしたいけど後回し
     if (selectedMapName.innerText != ''){
@@ -401,6 +478,8 @@ function setEditMap(evt) {
     mapContext.clearRect(0, 0, mapColNum*mapLength, mapRowNum*mapLength);
     //選択したマップを表示（キャンバス表示用に使う、非表示画像）
     currentMapImage.src = evt.target.src; 
+    //戻るの最後用の画像を保存しておく
+    orgEditMapImg = currentMapImage;
     //キャンバスの大きさを更新
     mapCanvas.height = currentMapImage.naturalHeight;
     mapCanvas.width = currentMapImage.naturalWidth;
@@ -419,6 +498,15 @@ function setEditMap(evt) {
 			arrayMaptipType[i][j] = maptipTypeObj[i][j];//マップチップタイプだけでなく、設定済みの全データに変更
 		}	
 	}
+    //戻るの最後用のjsonを保存しておく
+    //orgEditMapJson = arrayMaptipType.slice();
+	var tmpRow = [];
+	for (var i=0; i<arrayMaptipType.length; i++) {
+		tmpRow.push(arrayMaptipType[i].concat()); //配列をpushするときは、concat()しないと参照渡しになってしまうので注意！
+	}
+	orgEditMapJson = tmpRow.concat();
+	//特殊チップにタグを表示する
+	drawSpecialChipTags();
 	mapColNum = currentMapImage.naturalWidth/mapLength;
 	mapRowNum = currentMapImage.naturalHeight/mapLength;
 	mapBG.style.width = mapColNum*mapLength + 'px';
@@ -662,6 +750,18 @@ function setMap(mode, direction, side) {
 	backArrayJson = [];
 	forwardArray = [];
 	forwardArrayJson = [];
+
+	//マップを退避（orgに入れておく、マップの大きさを変更時はこれがオリジナルになる））
+	var img = new Image();
+	img.src = mapCanvas.toDataURL();
+	orgEditMapImg = img;
+    //戻るの最後用のjsonを保存しておく（orgに入れておく、マップの大きさを変更時はこれがオリジナルになる）
+	var tmpRow = [];
+	for (var i=0; i<arrayMaptipType.length; i++) {
+		tmpRow.push(arrayMaptipType[i].concat()); //配列をpushするときは、concat()しないと参照渡しになってしまうので注意！
+	}
+	orgEditMapJson = tmpRow.concat();
+
 	// 戻る進むボタンも非活性に戻す
 	forward.style.display = "none";
 	forwardDummy.style.display = "inline";
@@ -998,7 +1098,7 @@ function showWindowRect(evt) {
 }
 
 function showCurrentChipRect(evt) {
-	
+
 	// パスをリセット
 	mapContext.beginPath();
 	// レクタングル
@@ -1103,6 +1203,10 @@ function editMap(evt) {
     	} else if (currentModeId == '') {
 
 		}
+
+		//特殊チップタグを表示
+		drawSpecialChipTags();
+
 	}
 }
 
