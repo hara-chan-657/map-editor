@@ -157,6 +157,7 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
             </div>
             <p style="color: red; margin:1px;">wキー長押し：playerの画面幅を表示します</p>
             <p style="color: red; margin:1px;">eキー長押し：選択中チップの範囲と画像を描画します</p>
+            <p style="color: red; margin:1px;">rキー長押し：特殊チップのタグを表示します</p>
             <div id="mapContainer">
                 <div id="mapBG">
                     <canvas id="mapCanvas"></canvas>
