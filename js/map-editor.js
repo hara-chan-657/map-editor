@@ -188,7 +188,7 @@ if (document.getElementById('copy-map-data') != null) {
 ///////////////////////////////////////////////////////////////////////////////////////////
 window.addEventListener('load', setDefault, false);
 document.addEventListener('keydown', function (evt) {doKeyEvent(evt);}, false);
-document.addEventListener('keyup', function (evt) {doKeyEvent(evt);}, false);
+//document.addEventListener('keyup', function (evt) {doKeyEvent(evt);}, false);
 for (var i=0; i<option.length; i++) {
 	option[i].addEventListener('mouseenter', function(evt) {showDetail(evt);}, false);
 }
