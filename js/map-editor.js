@@ -1642,6 +1642,7 @@ function updateDataByShiftNum(shiftX, shiftY) {
 	//ムーブイベント
 	//デリートオブジェクトイベント
 	//エフェクトイベント：アニメーション
+	//横倒しイベント
 	//マップイベントとオブジェクトイベントがあるので注意。
 	for (var i=0; i<arrayMaptipType.length; i++) {
 		for (var j=0; j<arrayMaptipType[i].length; j++) {
@@ -1689,6 +1690,19 @@ function updateDataByShiftNum(shiftX, shiftY) {
         						}
         					}
         				}
+        				if (eventName == 'layDown') {
+        					//シフト分ずらす
+        					var chip_n_keys = Object.keys(arrayMaptipType[i][j]['events'][eventNames[k]]);
+        					for (var l=0; l<chip_n_keys.length; l++) {
+        						var index2 = chip_n_keys[l].indexOf('chip_');
+        						if (index2 == -1) continue;
+        						var chip_n_info = arrayMaptipType[i][j]['events'][eventNames[k]][chip_n_keys[l]];
+        						var tmpX = Number(chip_n_info['X'])+Number(shiftX);
+        						var tmpY = Number(chip_n_info['Y'])+Number(shiftY);
+        						arrayMaptipType[i][j]['events'][eventNames[k]][chip_n_keys[l]]['X'] = tmpX.toString();
+        						arrayMaptipType[i][j]['events'][eventNames[k]][chip_n_keys[l]]['Y'] = tmpY.toString();
+        					}
+        				}
     				}
 				}
 			}
@@ -1734,6 +1748,19 @@ function updateDataByShiftNum(shiftX, shiftY) {
         							arrayMaptipType[i][j]['object']['events'][eventNames[k]]['animationCells'][m]['x'] = tmpX.toString();
         							arrayMaptipType[i][j]['object']['events'][eventNames[k]]['animationCells'][m]['y'] = tmpY.toString();
         						}
+        					}
+        				}
+        				if (eventName == 'layDown') {
+        					//シフト分ずらす
+        					var chip_n_keys = Object.keys(arrayMaptipType[i][j]['object']['events'][eventNames[k]]);
+        					for (var l=0; l<chip_n_keys.length; l++) {
+        						var index2 = chip_n_keys[l].indexOf('chip_');
+        						if (index2 == -1) continue;
+        						var chip_n_info = arrayMaptipType[i][j]['object']['events'][eventNames[k]][chip_n_keys[l]];
+        						var tmpX = Number(chip_n_info['X'])+Number(shiftX);
+        						var tmpY = Number(chip_n_info['Y'])+Number(shiftY);
+        						arrayMaptipType[i][j]['object']['events'][eventNames[k]][chip_n_keys[l]]['X'] = tmpX.toString();
+        						arrayMaptipType[i][j]['object']['events'][eventNames[k]][chip_n_keys[l]]['Y'] = tmpY.toString();
         					}
         				}
     				}
