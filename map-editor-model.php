@@ -324,6 +324,7 @@ class mapEditor {
     function addMapDataToOldProject($oldProjectName, $mapImageData, $mapObjData, $mapName, $projectData) {
         //既存プロジェクトのパスを保存
         $oldProjectPath = $this->projectDirPath . $oldProjectName;
+        $oldProjectPathPlyr = $this->projectDirPathPlayer . $oldProjectName;
         //既存プロジェクトがあるか調べる
         if(file_exists($oldProjectPath)) {
             if(!file_exists($oldProjectPath.'/'.$mapName.'.png')) {
