@@ -1,5 +1,4 @@
 <?php
-require_once('map-editor-ctrl.php');
 require_once('map-editor-model.php');
 
 $obj = new mapEditor();
