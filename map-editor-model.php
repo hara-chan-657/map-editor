@@ -105,12 +105,12 @@ class mapEditor {
 
     function makeAllMapChipHtml($mapChips) {
         $html = '';
-        if ($mapChips[0] == 'プロジェクトがありません') {
+        if (isset($mapChips[0]) && $mapChips[0] == 'プロジェクトがありません') {
             $html .= '<div>プロジェクトがありません</div>';
             return $html;
         }
         foreach($mapChips AS $prjKey => $project){ 
-            if (substr($project[0], -9) == '空です') {
+            if (isset($project[0]) && substr($project[0], -9) == '空です') {
                 $html .= '<div style="color:red;">' . $project[0] . '</div>';
                 continue;
             }
@@ -120,7 +120,7 @@ class mapEditor {
             $html .= '</div>';
             $html .= '<div class="acordion">';
             foreach ($project AS $mapTypeKey => $mapType) {
-                if (substr($mapType[0], -9) == '空です') {
+                if (isset($mapType[0]) && substr($mapType[0], -9) == '空です') {
                     $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $mapType[0] . '</div>';
                     continue;
                 }
