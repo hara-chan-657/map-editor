@@ -3,21 +3,11 @@ require_once('map-editor-model.php');
 
 $obj = new mapEditor();
 
-if(isset($_GET['id']) && isset($_GET['pas'])) {
-	$id = $_GET['id'];
-	$pas = $_GET['pas'];
-    $saveMapContainer = $obj->getSaveMapContainer();
-    $mapUpdateContainer = $obj->getMapUpdateContainer();
-    $mapCopyContainer = $obj->getMapCopyContainer();
-    $projectsData = $obj->getProjectsData();
-    $deleteMaptipBtn = $obj->getdeleteMaptipBtn();
-} else {
-    $saveMapContainer = '';
-    $mapUpdateContainer = '';
-    $mapCopyContainer = '';
-    $projectsData = '';
-    $deleteMaptipBtn = '';
-}
+$saveMapContainer = $obj->getSaveMapContainer();
+$mapUpdateContainer = $obj->getMapUpdateContainer();
+$mapCopyContainer = $obj->getMapCopyContainer();
+$projectsData = $obj->getProjectsData();
+$deleteMaptipBtn = $obj->getdeleteMaptipBtn();
 
 if (isset($_POST['mapchipPath'])) {
     $mapchipPath = $_POST['mapchipPath'];
