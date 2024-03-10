@@ -1,8 +1,6 @@
 <?php
 //map-editorのmodel
 //クラスを作って、コンストラクタと各ファンクションを記述する
-require("admin.php");
-
 class mapEditor {
 
     private $mapChips; //マップチップ配列
@@ -419,15 +417,6 @@ class mapEditor {
 
                 return true;
             }
-        }
-        return false;
-    }
-
-    function isAdmin ($id, $pas) {
-        global $adminId;
-        global $adminPas;
-        if ($id == $adminId && $pas == $adminPas) {
-            return true;
         }
         return false;
     }

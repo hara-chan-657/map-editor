@@ -6,14 +6,11 @@ $obj = new mapEditor();
 if(isset($_GET['id']) && isset($_GET['pas'])) {
 	$id = $_GET['id'];
 	$pas = $_GET['pas'];
-	$adminRes = $obj->isAdmin($id, $pas);
-	if ($adminRes) {
-        $saveMapContainer = $obj->getSaveMapContainer();
-        $mapUpdateContainer = $obj->getMapUpdateContainer();
-        $mapCopyContainer = $obj->getMapCopyContainer();
-        $projectsData = $obj->getProjectsData();
-        $deleteMaptipBtn = $obj->getdeleteMaptipBtn();
-	}
+    $saveMapContainer = $obj->getSaveMapContainer();
+    $mapUpdateContainer = $obj->getMapUpdateContainer();
+    $mapCopyContainer = $obj->getMapCopyContainer();
+    $projectsData = $obj->getProjectsData();
+    $deleteMaptipBtn = $obj->getdeleteMaptipBtn();
 } else {
     $saveMapContainer = '';
     $mapUpdateContainer = '';
