@@ -107,12 +107,6 @@ $allMapChips = $obj->makeAllMapChipHtml($mapChips);
     <div id="header-container">
 		<img src="./image/map-editor/header.png" alt="ヘッダー画像">	
 	</div>
-    <ul>
-        <li style="color:red; font-size: 8px;">※マップの大きさを変更した時点で、「戻る・進む」はリセットされます（これは仕様）</li>
-        <li style="color:red; font-size: 8px;">※デリート時、「マップ属性用もどる配列」のデータを一つ多く更新してしまうバグがたまに起きる（発生条件不明、なのでデリート→もどるは注意）</li>
-        <li style="color:red; font-size: 8px;">※複数行・複数列のマップチップを使用する際は、はみ出ないように描画してください（めんどくさくて直していない仕様）</li>
-        <li style="color:red; font-size: 8px;">※シフトする際は画面をまたがないようにしてください（設定済みの特定のイベントやプロジェクトデータが不正になる恐れがある）</li>
-    </ul>
     <div id="editContainer">
         <div id="options">
             <span class="option"><img src="./image/map-editor/back.png" alt="戻るダミー" id="backDummy"><img src="./image/map-editor/backActv.png" alt="戻る" id="back"><span class="z2">戻る</span></span>
